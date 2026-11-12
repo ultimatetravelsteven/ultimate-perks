@@ -51,8 +51,10 @@ img{max-width:100%}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.hero::before{animation:none}}
 .hero .w{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:end}
-.hero h1{font-size:clamp(40px,6.4vw,78px);line-height:.95;text-shadow:0 3px 0 rgba(18,59,74,.35)}
-.hero h1 span{display:inline-block;background:var(--navy);color:#fff;padding:2px 14px 6px;border-radius:12px;transform:rotate(-2deg);margin-top:8px;text-shadow:none}
+.hero h1{font-size:clamp(34px,5vw,64px);line-height:.98;text-shadow:0 3px 0 rgba(18,59,74,.35)}
+.hero h1 .l1,.hero h1 .l2{display:block;white-space:nowrap}
+.hero h1 .jf{display:inline-block;background:var(--navy);color:#fff;padding:2px 14px 6px;border-radius:12px;transform:rotate(-2deg);margin-top:12px;text-shadow:none}
+@media(max-width:420px){.hero h1{font-size:9.2vw}}
 .hero p.sub{font-size:20px;line-height:1.5;margin:22px 0 26px;max-width:560px;font-weight:700}
 .valid{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;font-weight:900;font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding:8px 14px;border-radius:999px;margin-bottom:20px}
 .valid i{width:9px;height:9px;border-radius:50%;background:#7CF2B0;box-shadow:0 0 0 4px rgba(124,242,176,.25)}
@@ -62,8 +64,9 @@ img{max-width:100%}
 .stats b{display:block;font-weight:900;font-size:40px;line-height:1;letter-spacing:0;text-shadow:0 2px 0 rgba(18,59,74,.3)}
 /* // CSS NAME: home-phone // */
 .phone{justify-self:center;width:300px;max-width:100%;background:var(--navy);border-radius:42px 42px 0 0;padding:14px 14px 0;box-shadow:0 30px 60px rgba(18,59,74,.35)}
-.screen{background:#fff;border-radius:30px 30px 0 0;overflow:hidden;height:440px;position:relative}
-.screen .bar{background:var(--mint);padding:14px 14px 10px;text-align:center}
+.screen{background:#fff;border-radius:30px 30px 0 0;overflow:hidden;height:440px;position:relative;display:flex;flex-direction:column}
+.screen .bar{background:var(--mint);padding:14px 14px 10px;text-align:center;position:relative;z-index:2;flex:0 0 auto}
+.screen .fw{flex:1;overflow:hidden;position:relative;z-index:1}
 .screen .bar svg{height:30px;transform:rotate(-3deg);overflow:visible}
 .screen .feed{padding:10px;display:flex;flex-direction:column;gap:10px;animation:feed 26s linear infinite}
 @keyframes feed{to{transform:translateY(-50%)}}
@@ -158,6 +161,9 @@ img{max-width:100%}
 .ev small{font-weight:900;font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.9}
 .ev b{font-weight:900;text-transform:uppercase;font-size:24px;line-height:1.02;margin:8px 0 10px}
 .ev p{margin:0;font-size:15px;line-height:1.45;opacity:.95}
+/* // CSS NAME: home-mobile // */
+.nav a.btn{white-space:nowrap}
+@media(max-width:520px){.lock .pk{height:32px}.lock .by img{width:50px}.nav a.btn{min-height:40px;padding:0 14px;font-size:13px}.valid{font-size:11px;letter-spacing:.08em;white-space:nowrap}}
 </style>
 </head>
 <body>
@@ -169,7 +175,7 @@ img{max-width:100%}
 <section class="hero" id="top"><div class="w">
   <div>
     <div class="valid"><i></i>Exclusive traveller club · free to join</div>
-    <h1>The East Coast<br>traveller club<br><span>Join free</span></h1>
+    <h1><span class="l1">The East Coast</span><span class="l2">traveller club</span><span class="jf">Join free</span></h1>
     <p class="sub">Local hotspots, venue offers and events made for travellers, from Melbourne to Cairns. Valid for every backpacker and working holiday maker. Show the app and save.</p>
     <div class="ctas">
       <a class="btn" href="/app/">Open the app</a>
@@ -178,7 +184,7 @@ img{max-width:100%}
     </div>
     <div class="stats" id="stats"></div>
   </div>
-  <div class="phone" aria-hidden="true"><div class="screen"><div class="bar"><svg viewBox="0 0 460 112"><g font-family="Work Sans, sans-serif" font-weight="900" font-size="130" text-anchor="middle"><text x="239" y="109" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#FFFFFF">PERKS</text></g></svg></div><div class="feed" id="feed"></div></div></div>
+  <div class="phone" aria-hidden="true"><div class="screen"><div class="bar"><svg viewBox="0 0 460 112"><g font-family="Work Sans, sans-serif" font-weight="900" font-size="130" text-anchor="middle"><text x="239" y="109" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#FFFFFF">PERKS</text></g></svg></div><div class="fw"><div class="feed" id="feed"></div></div></div></div>
 </div></section>
 
 <section class="sec" id="offers"><div class="w">
