@@ -872,13 +872,17 @@ a{color:var(--mint-deep)}
 .gal-dots i.on{background:#fff;width:16px;border-radius:3px}
 /* // CSS NAME: perks-offers // */
 .offer-list{display:flex;flex-direction:column;gap:10px}
-.offer-item{border-radius:16px;padding:16px;background:var(--mint-mist);display:flex;flex-direction:column;gap:10px}
-.offer-item.live{background:var(--mint)}
-.offer-item p{margin:0;font-family:var(--display);font-weight:900;font-size:18px;line-height:1.2;color:var(--navy)}
-.offer-item small{font-size:13px;color:var(--ink-80);line-height:1.4}
-.offer-item .row2{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.use-btn{min-height:44px;padding:0 18px;border:0;border-radius:12px;background:var(--mint-deep);color:#fff;font-family:var(--display);font-weight:900;font-size:13px;letter-spacing:.06em}
-.use-btn[disabled]{background:#CFD0D1;color:#43484A}
+/* // CSS NAME: perks-offer-card // */
+.offer-item{border-radius:18px;padding:18px;background:#00ADBC;color:#fff;display:flex;align-items:center;gap:14px}
+.offer-item.live{background:#00ADBC}
+.offer-item .oi-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.offer-item p{margin:0;font-family:var(--display);font-weight:900;font-size:26px;line-height:1.05;text-transform:uppercase;color:#fff}
+.offer-item small{font-size:13px;color:#fff;line-height:1.4}
+.offer-item p.l{font-size:20px;line-height:1.1}
+.offer-item p.xl{font-size:16px;line-height:1.2}
+.offer-item .oi-rule{opacity:.92}
+.use-btn{flex:0 0 auto;align-self:center;min-height:58px;min-width:96px;padding:0 24px;border:0;border-radius:14px;background:#123B4A;color:#fff;font-family:var(--display);font-weight:900;font-size:17px;letter-spacing:.08em;box-shadow:0 3px 10px rgba(18,59,74,.3)}
+.use-btn[disabled]{background:rgba(255,255,255,.35);color:#fff;box-shadow:none}
 .hours-tbl{width:100%;border-collapse:collapse;font-size:14px}
 .hours-tbl td{padding:4px 0}
 .hours-tbl tr.today td{font-weight:700;color:var(--mint-deep)}
@@ -1303,9 +1307,9 @@ function vDetail(){
   const gal=p.photos.length?p.photos:[''];
   const offers=p.offers.map((o,i)=>{ const live=offerLive(p,o), used=usedToday(p.id,i);
     const when = o.when ? (live?'<span class="live-chip"><b></b>ON NOW</span>':`<span class="soon-chip">${esc(nextOfferText(p,o))}</span>`) : '';
-    return `<div class="offer-item ${live?'live':''}">${when}<p>${esc(o.t)}</p>${o.note?`<small>${esc(o.note)}</small>`:''}
-      <div class="row2"><small>${used?'Used today. Available again tomorrow.':'One use per person per day.'}</small>
-      <button type="button" class="use-btn" data-use="${i}" ${used?'disabled':''}>${used?'USED':'USE'}</button></div></div>`; }).join('');
+    return `<div class="offer-item ${live?'live':''}"><div class="oi-body">${when}<p class="${o.t.length>60?'xl':o.t.length>26?'l':''}">${esc(o.t.toUpperCase())}</p>${o.note?`<small>${esc(o.note)}</small>`:''}
+      <small class="oi-rule">${used?'Used today. Available again tomorrow.':'One use per person per day.'}</small></div>
+      <button type="button" class="use-btn" data-use="${i}" ${used?'disabled':''}>${used?'USED':'USE'}</button></div>`; }).join('');
   const r=rating(p), revs=(S.reviews[p.id]||[]).slice(-3).reverse();
   return `<main class="view" id="scroller">
     <div class="d-hero" style="height:280px">
@@ -1522,7 +1526,7 @@ function vBrand(){
       <div class="txt"><p style="margin:0 0 6px;font-size:13px;font-weight:700;letter-spacing:.08em;color:#CFE9E6">${esc((b.category||'').toUpperCase())} · ${b.locs.length} LOCATIONS</p><h1 class="h-display">${esc(b.name)}</h1></div></div>
     <div class="d-body">
       ${b.preview?`<div class="g-badge big">Preview: not live yet</div>`:''}
-      <div class="offer-item live"><p>${esc(b.offer||'Save 10%')}</p><small>At every ${esc(b.name)} location below. Show the app to redeem.</small></div>
+      <div class="offer-item live"><div class="oi-body"><p>${esc((b.offer||'Save 10%').toUpperCase())}</p><small>At every ${esc(b.name)} location below. Show the app to redeem.</small></div></div>
       <div><h2 class="h-display" style="font-size:16px;margin-bottom:10px">WHERE TO FIND THEM</h2><div id="brandmap" class="vmap" style="height:260px"></div></div>
       ${towns.map(k=>`<div><h2 class="h-display" style="font-size:15px;margin:4px 0 8px">${esc((DATA.towns[k]||{name:k}).name.split(' / ')[0].toUpperCase())}</h2>${b.locs.filter(l=>l.town===k).map(l=>`<div class="loc-row"><span><b>${esc(l.name)}</b><span>${esc(l.addr||'Address coming soon')}</span></span>${l.perk?`<button type="button" class="btn btn-primary" style="padding:8px 12px;font-size:12px" data-perk="${l.perk}">VIEW</button>`:l.lat?`<a class="loc-dir" href="https://www.google.com/maps/dir/?api=1&destination=${l.lat},${l.lon}" target="_blank" rel="noopener" aria-label="Directions to ${esc(l.name)}">${svg('dir',18,'#0E6E66',2.2)}</a>`:''}</div>`).join('')}</div>`).join('')}
       <div style="height:30px"></div></div></main>`;
