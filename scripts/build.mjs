@@ -1,5 +1,6 @@
 // Builds the static site into dist/:
-//   dist/index.html        perks.ultimate.travel (venue site)
+//   dist/index.html        perks.ultimate.travel (traveller home page)
+//   dist/venues/, dist/perkoffers/  venue sales page
 //   dist/app/index.html    traveller web app
 //   dist/admin/index.html  venue portal and Perks admin
 // Env: SUPABASE_URL, SUPABASE_ANON_KEY (both public-safe). Without them the pages run in demo mode.
@@ -9,7 +10,7 @@ const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 const r = p => fs.readFileSync(path.join(root, p));
 const out = path.join(root, 'dist');
 fs.rmSync(out, { recursive: true, force: true });
-for (const d of ['', 'app', 'admin', 'assets', 'assets/fonts']) fs.mkdirSync(path.join(out, d), { recursive: true });
+for (const d of ['', 'app', 'admin', 'venues', 'perkoffers', 'assets', 'assets/fonts']) fs.mkdirSync(path.join(out, d), { recursive: true });
 
 const json = s => s.replace(/<\//g, '<\\/');
 const logo = r('assets/logo-white.png').toString('base64');
@@ -26,7 +27,34 @@ const fill = (tpl, data) => {
   for (const [w, b] of Object.entries(fonts)) t = t.split(`__WS${w}__`).join(b);
   return t;
 };
-fs.writeFileSync(path.join(out, 'index.html'), fill('src/site.html', adminData));
+// Home page data: a sample of perks with photos, stops with counts, a few activities
+const AD = JSON.parse(appData);
+const townName = id => (AD.towns[id] || {}).name ? AD.towns[id].name.split(' / ')[0] : id;
+const isUrl = u => typeof u === 'string' && /^https?:\/\//.test(u);
+const firstPhoto = p => [p.photo, ...(p.photos || [])].find(isUrl) || '';
+const perksWithPhoto = AD.perks.filter(p => firstPhoto(p) && p.offers && p.offers[0]);
+const byTown = {};
+for (const p of perksWithPhoto) (byTown[p.town] = byTown[p.town] || []).push(p);
+const sample = [];
+for (let i = 0; sample.length < 16 && i < 10; i++) for (const t of Object.keys(AD.towns)) { const p = (byTown[t] || [])[i]; if (p && sample.length < 16) sample.push(p); }
+const pc = {}, ac = {};
+AD.perks.forEach(p => pc[p.town] = (pc[p.town] || 0) + 1);
+(AD.acts || []).forEach(a => ac[a.town] = (ac[a.town] || 0) + 1);
+const actSample = [];
+const seenT = new Set();
+for (const a of (AD.acts || [])) { if (!isUrl(a.img) || seenT.has(a.town)) continue; seenT.add(a.town); actSample.push(a); if (actSample.length >= 8) break; }
+const HOME = {
+  counts: { perks: AD.perks.length, stops: Object.keys(AD.towns).length, acts: (AD.acts || []).length },
+  perks: sample.map(p => ({ id: p.id, name: p.name, cat: p.cat, townName: townName(p.town), offer: (p.offers[0].t || p.offer || '').replace(/\.$/, ''), photo: firstPhoto(p) })),
+  towns: Object.entries(AD.towns).map(([id, t]) => ({ id, name: t.name.split(' / ')[0], photo: isUrl(t.photo) ? t.photo : '', perks: pc[id] || 0, acts: ac[id] || 0 })),
+  acts: actSample.map(a => ({ id: a.id, title: a.title, townName: townName(a.town), dur: a.dur || '', price: a.price ? String(Math.round(+a.price)) : '', img: a.img })),
+  qr: r('assets/app-qr.svg').toString().replace(/^<\?xml[^>]*>\s*/, ''),
+};
+const home = fill('src/home.html', '{}').replace('__HOME__', json(JSON.stringify(HOME)));
+fs.writeFileSync(path.join(out, 'index.html'), home);
+const venueSite = fill('src/site.html', adminData);
+fs.writeFileSync(path.join(out, 'venues/index.html'), venueSite);
+fs.writeFileSync(path.join(out, 'perkoffers/index.html'), venueSite);
 fs.writeFileSync(path.join(out, 'app/index.html'), fill('src/app.html', appData));
 fs.writeFileSync(path.join(out, 'admin/index.html'), fill('src/admin.html', adminData));
 fs.copyFileSync(path.join(root, 'src/auth.js'), path.join(out, 'auth.js'));

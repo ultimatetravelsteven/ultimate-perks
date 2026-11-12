@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Traveller Perks | The East Coast traveller club | perks.ultimate.travel</title>
+<meta name="description" content="Free app with discounts at bars, cafes, restaurants and activities from Melbourne to Cairns. Valid for every traveller and working holiday maker on the East Coast of Australia.">
+<meta name="theme-color" content="#4ECAC2">
+<link rel="canonical" href="https://perks.ultimate.travel/">
+<style>
+/* // CSS NAME: home-fonts // */
+@font-face{font-family:"Work Sans";font-weight:500;font-display:swap;src:url(data:font/woff2;base64,__WS500__) format("woff2")}
+@font-face{font-family:"Work Sans";font-weight:700;font-display:swap;src:url(data:font/woff2;base64,__WS700__) format("woff2")}
+@font-face{font-family:"Work Sans";font-weight:900;font-display:swap;src:url(data:font/woff2;base64,__WS900__) format("woff2")}
+/* // CSS NAME: home-tokens // */
+:root{--mint:#4ECAC2;--teal:#00ADBC;--deep:#1b8a9f;--navy:#123B4A;--coral:#FF775E;--ink2:#43484A;--ink3:#737778;--line:#E3E8E9;--bg:#F4F8F8}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font:500 17px/1.6 "Work Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--navy);background:#fff}
+h1,h2,h3{font-family:"Work Sans","Arial Black",sans-serif;font-weight:900;text-transform:uppercase;line-height:1;margin:0}
+a{color:var(--deep)}
+img{max-width:100%}
+.w{max-width:1160px;margin:0 auto;padding:0 24px}
+.eyebrow{font-weight:900;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--deep);margin-bottom:10px}
+.sec{padding:72px 0}
+.sec h2{font-size:clamp(30px,4.4vw,48px);margin-bottom:14px}
+.lead{font-size:19px;color:var(--ink2);max-width:640px;margin:0 0 30px}
+/* // CSS NAME: home-buttons // */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 26px;border-radius:14px;border:0;background:var(--navy);color:#fff;font:900 16px/1 "Work Sans",sans-serif;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;cursor:pointer;box-shadow:0 4px 14px rgba(18,59,74,.25)}
+.btn.teal{background:var(--teal)}
+.btn.coral{background:var(--coral)}
+.btn:hover{filter:brightness(1.08)}
+.store{display:inline-flex;align-items:center;gap:10px;min-height:54px;padding:0 18px;border-radius:14px;background:rgba(18,59,74,.85);color:#fff;text-decoration:none;font-weight:700;font-size:13px;line-height:1.15}
+.store b{display:block;font-weight:900;font-size:16px;letter-spacing:.02em}
+.store svg{width:26px;height:26px;flex:0 0 auto}
+.store small{opacity:.85}
+/* // CSS NAME: home-header // */
+.hdr{background:var(--mint);position:sticky;top:0;z-index:20}
+.hdr .w{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:12px;padding-bottom:12px}
+.lock{display:flex;align-items:flex-end;gap:8px;text-decoration:none}
+.lock .pk{height:40px;width:auto;transform:rotate(-3deg);overflow:visible}
+.lock .by{display:flex;align-items:center;gap:4px;color:#fff;font-size:11px;font-weight:700;margin-bottom:2px}
+.lock .by img{width:62px}
+.nav{display:flex;gap:22px;align-items:center}
+.nav a{color:#fff;text-decoration:none;font-weight:900;font-size:15px;letter-spacing:.05em;text-transform:uppercase;text-shadow:0 1px 2px rgba(18,59,74,.55),0 0 1px rgba(18,59,74,.4)}
+.nav a.btn{text-shadow:none;min-height:44px;padding:0 18px;font-size:14px}
+@media(max-width:860px){.nav a:not(.btn){display:none}}
+/* // CSS NAME: home-hero // */
+.hero{background:var(--mint);color:#fff;position:relative;overflow:hidden;padding:56px 0 0}
+.hero::before{content:"";position:absolute;left:50%;top:70%;width:1600px;height:1600px;margin:-800px 0 0 -800px;background:repeating-conic-gradient(rgba(255,255,255,.09) 0 9deg,transparent 9deg 18deg);animation:spin 80s linear infinite;pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.hero::before{animation:none}}
+.hero .w{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:end}
+.hero h1{font-size:clamp(40px,6.4vw,78px);line-height:.95;text-shadow:0 3px 0 rgba(18,59,74,.35)}
+.hero h1 span{display:inline-block;background:var(--navy);color:#fff;padding:2px 14px 6px;border-radius:12px;transform:rotate(-2deg);margin-top:8px;text-shadow:none}
+.hero p.sub{font-size:20px;line-height:1.5;margin:22px 0 26px;max-width:560px;font-weight:700}
+.valid{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;font-weight:900;font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding:8px 14px;border-radius:999px;margin-bottom:20px}
+.valid i{width:9px;height:9px;border-radius:50%;background:#7CF2B0;box-shadow:0 0 0 4px rgba(124,242,176,.25)}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:26px}
+.stats{display:flex;gap:28px;flex-wrap:wrap;padding-bottom:40px}
+.stats div{font-weight:700;font-size:14px;letter-spacing:.06em;text-transform:uppercase}
+.stats b{display:block;font-weight:900;font-size:40px;line-height:1;letter-spacing:0;text-shadow:0 2px 0 rgba(18,59,74,.3)}
+/* // CSS NAME: home-phone // */
+.phone{justify-self:center;width:300px;max-width:100%;background:var(--navy);border-radius:42px 42px 0 0;padding:14px 14px 0;box-shadow:0 30px 60px rgba(18,59,74,.35)}
+.screen{background:#fff;border-radius:30px 30px 0 0;overflow:hidden;height:440px;position:relative}
+.screen .bar{background:var(--mint);padding:14px 14px 10px;text-align:center}
+.screen .bar svg{height:30px;transform:rotate(-3deg);overflow:visible}
+.screen .feed{padding:10px;display:flex;flex-direction:column;gap:10px;animation:feed 26s linear infinite}
+@keyframes feed{to{transform:translateY(-50%)}}
+@media (prefers-reduced-motion:reduce){.screen .feed{animation:none}}
+.mini{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:8px;color:var(--navy);text-align:left}
+.mini img,.mini .ph{width:62px;height:62px;border-radius:10px;object-fit:cover;flex:0 0 auto;background:var(--bg)}
+.mini b{display:block;font-size:13px;line-height:1.2}
+.mini span{display:inline-block;margin-top:4px;background:var(--teal);color:#fff;font-weight:900;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:999px;max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* // CSS NAME: home-offer-grid // */
+.offers{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.oc{border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 6px 22px rgba(18,59,74,.10);display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .15s}
+.oc:hover{transform:translateY(-3px)}
+.oc .im{position:relative;aspect-ratio:4/3;background:var(--bg)}
+.oc .im img{width:100%;height:100%;object-fit:cover;display:block}
+.oc .tag{position:absolute;left:10px;top:10px;background:rgba(18,59,74,.85);color:#fff;font-weight:900;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
+.oc .deal{background:var(--teal);color:#fff;padding:14px 16px;font-weight:900;text-transform:uppercase;line-height:1.1;font-size:18px}
+.oc .deal.l{font-size:15px}
+.oc .nm{padding:12px 16px 16px;font-weight:700;font-size:15px}
+.oc .nm small{display:block;color:var(--ink3);font-weight:500;font-size:13px}
+.morebar{text-align:center;margin-top:30px}
+/* // CSS NAME: home-steps // */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
+.step{background:#fff;border-radius:20px;padding:28px;box-shadow:0 6px 22px rgba(18,59,74,.08);position:relative}
+.step::before{counter-increment:s;content:counter(s);display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:16px;background:var(--teal);color:#fff;font-weight:900;font-size:26px;margin-bottom:16px}
+.step h3{font-size:22px;margin-bottom:8px}
+.step p{margin:0;color:var(--ink2)}
+@media(max-width:820px){.steps{grid-template-columns:1fr}.hero .w{grid-template-columns:1fr}.phone{display:none}}
+/* // CSS NAME: home-stops // */
+.stops{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.stop{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:4/3;background:var(--deep);text-decoration:none;color:#fff}
+.stop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stop::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,59,74,0) 35%,rgba(18,59,74,.85))}
+.stop .t{position:absolute;left:14px;right:12px;bottom:12px;z-index:1}
+.stop b{display:block;font-weight:900;font-size:19px;text-transform:uppercase;line-height:1.05}
+.pills{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.pill{font-weight:800;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#fff;padding:4px 8px;border-radius:999px}
+.pill.p{background:var(--teal)}.pill.a{background:var(--coral)}
+/* // CSS NAME: home-why // */
+.why{background:var(--navy);color:#fff}
+.why .eyebrow{color:var(--mint)}
+.why .lead{color:#CFE9E6}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.wi{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px}
+.wi h3{font-size:18px;margin-bottom:8px;color:var(--mint)}
+.wi p{margin:0;color:#E6F5F3;font-size:16px}
+/* // CSS NAME: home-activities // */
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.ac{border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 6px 22px rgba(18,59,74,.10);text-decoration:none;color:inherit}
+.ac .im{aspect-ratio:16/10;background:var(--bg);position:relative}
+.ac .im img{width:100%;height:100%;object-fit:cover;display:block}
+.ac .inst{position:absolute;left:10px;top:10px;background:var(--coral);color:#fff;font-weight:900;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;border-radius:999px}
+.ac .bd{padding:14px 16px 16px}
+.ac b{display:block;font-weight:900;text-transform:uppercase;font-size:15px;line-height:1.15}
+.ac small{color:var(--ink3);font-size:13px}
+.ac .pr{display:inline-block;margin-top:8px;background:var(--teal);color:#fff;font-weight:900;font-size:13px;padding:5px 11px;border-radius:999px}
+/* // CSS NAME: home-download // */
+.dl{background:var(--teal);color:#fff;border-radius:28px;padding:48px;display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:center;position:relative;overflow:hidden}
+.dl h2{font-size:clamp(30px,4vw,46px);margin-bottom:12px}
+.dl p{margin:0 0 22px;font-size:18px;font-weight:700}
+.dl .qr{background:#fff;border-radius:20px;padding:18px;justify-self:center;text-align:center;color:var(--navy);font-weight:900;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.dl .qr img{display:block;width:180px;height:180px;margin:0 auto 8px}
+@media(max-width:820px){.dl{grid-template-columns:1fr;padding:30px}.dl .qr{display:none}}
+/* // CSS NAME: home-faq // */
+.faq{max-width:820px}
+.faq details{border-bottom:1px solid var(--line);padding:16px 0}
+.faq summary{cursor:pointer;font-weight:900;font-size:18px;text-transform:uppercase;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::after{content:"+";color:var(--teal);font-size:26px;line-height:.8}
+.faq details[open] summary::after{content:"-"}
+.faq p{margin:10px 0 0;color:var(--ink2)}
+/* // CSS NAME: home-venue-band // */
+.vband{background:var(--bg)}
+.vband .w{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.vband h2{font-size:clamp(26px,3.4vw,38px)}
+/* // CSS NAME: home-footer // */
+.foot{background:var(--navy);color:#CFE9E6;padding:40px 0;font-size:15px}
+.foot .w{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+.foot a,.foot button{color:#fff;font-weight:700;background:none;border:0;font:inherit;cursor:pointer;text-decoration:underline;padding:0}
+.foot nav{display:flex;gap:18px;flex-wrap:wrap}
+/* // CSS NAME: home-contact-modal // */
+.modal{position:fixed;inset:0;background:rgba(18,59,74,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal.on{display:flex}
+.modal .box{background:#fff;border-radius:22px;max-width:460px;width:100%;padding:28px}
+.modal h3{font-size:24px;margin-bottom:12px}
+.modal label{display:block;font-weight:900;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:12px 0 6px}
+.modal input,.modal textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit}
+.modal .row{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+.modal .ghost{background:#fff;color:var(--navy);box-shadow:none;border:1px solid var(--line)}
+/* // CSS NAME: home-events // */
+.evs{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.ev{background:var(--c);color:#fff;border-radius:20px;padding:22px;min-height:190px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.ev::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.12)}
+.ev small{font-weight:900;font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.9}
+.ev b{font-weight:900;text-transform:uppercase;font-size:24px;line-height:1.02;margin:8px 0 10px}
+.ev p{margin:0;font-size:15px;line-height:1.45;opacity:.95}
+</style>
+</head>
+<body>
+<header class="hdr"><div class="w">
+  <a class="lock" href="/" aria-label="Traveller Perks home"><svg class="pk" viewBox="0 0 460 112" role="img" aria-label="PERKS"><g font-family="Work Sans, sans-serif" font-weight="900" font-size="130" text-anchor="middle"><text x="239" y="109" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#FFFFFF">PERKS</text></g></svg><span class="by">by <img src="data:image/png;base64,__LOGO__" alt="ULTIMATE"></span></a>
+  <nav class="nav" aria-label="Main"><a href="#offers">Perks</a><a href="#how">How it works</a><a href="#events">Events</a><a href="#stops">Stops</a><a href="#faq">FAQ</a><a href="/venues/">For venues</a><a class="btn" href="/app/">Get the app</a></nav>
+</div></header>
+
+<section class="hero" id="top"><div class="w">
+  <div>
+    <div class="valid"><i></i>Exclusive traveller club · free to join</div>
+    <h1>The East Coast<br>traveller club<br><span>Join free</span></h1>
+    <p class="sub">Local hotspots, venue offers and events made for travellers, from Melbourne to Cairns. Valid for every backpacker and working holiday maker. Show the app and save.</p>
+    <div class="ctas">
+      <a class="btn" href="/app/">Open the app</a>
+      <a class="store" href="/app/" aria-label="iPhone app coming soon. Use the web app for now"><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9s-2-.9-3.4-.9C5.9 6.8 4.2 7.8 3.3 9.4c-1.9 3.2-.5 8 1.3 10.6.9 1.3 1.9 2.7 3.3 2.6 1.3-.1 1.8-.8 3.4-.8s2 .8 3.4.8c1.4 0 2.3-1.3 3.2-2.6 1-1.5 1.4-2.9 1.4-3-.1 0-2.9-1.1-3-4.4zM13.9 4.9c.7-.9 1.2-2 1.1-3.2-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg><span><small>Coming soon to</small><b>App Store</b></span></a>
+      <a class="store" href="/app/" aria-label="Android app coming soon. Use the web app for now"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#7CF2B0" d="M3.6 2.3 13.4 12l-9.8 9.7c-.4-.2-.6-.6-.6-1.1V3.4c0-.5.2-.9.6-1.1z"/><path fill="#FFD54A" d="m16.9 15.5-3.5-3.5 3.5-3.5 4 2.3c1.1.6 1.1 1.8 0 2.4z"/><path fill="#FF775E" d="M13.4 12 3.6 21.7c.3.2.8.2 1.3-.1l12-6.1z"/><path fill="#4ECAC2" d="M13.4 12 16.9 8.5l-12-6.1c-.5-.3-1-.3-1.3-.1z"/></svg><span><small>Coming soon to</small><b>Google Play</b></span></a>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="phone" aria-hidden="true"><div class="screen"><div class="bar"><svg viewBox="0 0 460 112"><g font-family="Work Sans, sans-serif" font-weight="900" font-size="130" text-anchor="middle"><text x="239" y="109" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#FFFFFF">PERKS</text></g></svg></div><div class="feed" id="feed"></div></div></div>
+</div></section>
+
+<section class="sec" id="offers"><div class="w">
+  <div class="eyebrow">Real perks in the app now</div>
+  <h2>Deals you'll actually use</h2>
+  <p class="lead">Drinks, food, activities and nights out at the places travellers already go. Every perk works for any traveller with the app. No booking with us needed.</p>
+  <div class="offers" id="offergrid"></div>
+  <div class="morebar"><a class="btn teal" href="/app/">See all perks in the app</a></div>
+</div></section>
+
+<section class="sec" id="how" style="background:var(--bg)"><div class="w">
+  <div class="eyebrow">How it works</div>
+  <h2>Three taps to save</h2>
+  <p class="lead">No codes to remember and nothing to print.</p>
+  <div class="steps">
+    <div class="step"><h3>Get the app</h3><p>Open Perks on your phone. It's free and takes ten seconds. Add it to your home screen so it's there when you need it.</p></div>
+    <div class="step"><h3>Find a perk</h3><p>Browse by stop or see what's near you. Every venue shows the deal, the hours and where it is on the map.</p></div>
+    <div class="step"><h3>Show and save</h3><p>Tap Use at the counter and show the live voucher to staff. One use per person per day, at every venue.</p></div>
+  </div>
+</div></section>
+
+<section class="sec" id="events" style="background:var(--bg)"><div class="w">
+  <div class="eyebrow">Members' events</div>
+  <h2>Themed nights made for travellers</h2>
+  <p class="lead">The big backpacker dates of the year, with Perks venues putting on deals and meetups for members. Watch the app for what's on in your stop.</p>
+  <div class="evs">
+    <div class="ev" style="--c:#1F9D55"><small>17 March</small><b>St Patrick's Day</b><p>Green beer, Irish pubs and the biggest traveller pub crawl of the year.</p></div>
+    <div class="ev" style="--c:#E0A21B"><small>Late Sept to Oct</small><b>Oktoberfest</b><p>Steins, pretzels and beer halls. Lederhosen optional, encouraged.</p></div>
+    <div class="ev" style="--c:#5B2C83"><small>31 October</small><b>Halloween</b><p>Costume nights and hostel parties up the coast.</p></div>
+    <div class="ev" style="--c:#C8102E"><small>25 December</small><b>Christmas on the beach</b><p>An orphan Christmas with other travellers, sun and a barbecue.</p></div>
+    <div class="ev" style="--c:#123B4A"><small>31 December</small><b>New Year's Eve</b><p>Fireworks, rooftop parties and where to watch them from.</p></div>
+    <div class="ev" style="--c:#00747F"><small>26 January</small><b>Australia Day</b><p>Beach days, barbecues and the Hottest 100 on the radio.</p></div>
+    <div class="ev" style="--c:#D9467F"><small>Feb to March</small><b>Mardi Gras</b><p>Sydney's parade weekend and the parties around it.</p></div>
+    <div class="ev" style="--c:#FF775E"><small>First Tuesday, Nov</small><b>Melbourne Cup</b><p>The race that stops the nation. Dress up, pick a horse, find a party.</p></div>
+  </div>
+  <div class="morebar"><a class="btn teal" href="/app/">See what's on in the app</a></div>
+</div></section>
+
+<section class="sec" id="stops"><div class="w">
+  <div class="eyebrow">Melbourne to Cairns</div>
+  <h2>Perks at every stop</h2>
+  <p class="lead">The towns backpackers actually travel through, each with its own perks, bookable activities and free things to do.</p>
+  <div class="stops" id="stopgrid"></div>
+</div></section>
+
+<section class="sec why"><div class="w">
+  <div class="eyebrow">Why download it</div>
+  <h2>Your East Coast, sorted</h2>
+  <p class="lead">Perks pays for itself the first night out. Then it keeps going.</p>
+  <div class="wgrid">
+    <div class="wi"><h3>Save every day</h3><p>Use a perk at every venue, every day you're in town.</p></div>
+    <div class="wi"><h3>Free for everyone</h3><p>Every traveller and working holiday maker can use it. You don't need to be on a tour.</p></div>
+    <div class="wi"><h3>Book activities</h3><p>Reef trips, skydives, sailing and surf lessons with instant confirmation and clear cancellation rules.</p></div>
+    <div class="wi"><h3>Flash deals</h3><p>Venues drop happy hours and last-minute deals. Turn on alerts and you'll hear first.</p></div>
+    <div class="wi"><h3>Free things to do</h3><p>Beaches, walks, markets and what's on, picked for each stop.</p></div>
+    <div class="wi"><h3>Save your favourites</h3><p>Heart a venue and it's waiting when you arrive in town.</p></div>
+  </div>
+</div></section>
+
+<section class="sec" id="activities"><div class="w">
+  <div class="eyebrow">Book in the app</div>
+  <h2>Activities, instantly confirmed</h2>
+  <p class="lead">Bookable from inside Perks. Your voucher, meeting point and start time come by email once you've paid.</p>
+  <div class="acts" id="actgrid"></div>
+</div></section>
+
+<section class="sec" style="padding-top:0"><div class="w">
+  <div class="dl">
+    <div>
+      <h2>Get Perks free</h2>
+      <p>Open it on your phone now and add it to your home screen. The iPhone and Android apps are on the way.</p>
+      <div class="ctas" style="margin:0"><a class="btn" href="/app/">Open the app</a><a class="store" href="/app/"><span><small>Coming soon to</small><b>App Store</b></span></a><a class="store" href="/app/"><span><small>Coming soon to</small><b>Google Play</b></span></a></div>
+    </div>
+    <div class="qr"><img id="qr" alt="QR code linking to perks.ultimate.travel/app" width="180" height="180">Scan on your phone</div>
+  </div>
+</div></section>
+
+<section class="sec" id="faq" style="padding-top:20px"><div class="w">
+  <div class="eyebrow">Questions</div>
+  <h2>Good to know</h2>
+  <div class="faq">
+    <details><summary>Who can use Perks?</summary><p>Any traveller. Backpackers, working holiday makers, people on a Group Tour, people travelling on their own. You don't need to have booked anything with ULTIMATE.</p></details>
+    <details><summary>Does it cost anything?</summary><p>No. The app and every perk are free for travellers.</p></details>
+    <details><summary>How do I use a perk?</summary><p>Open the venue in the app, tap Use and show the live voucher to staff. It changes every few seconds so staff know it's real.</p></details>
+    <details><summary>How often can I use a perk?</summary><p>Once per person per day at each venue, unless the venue says otherwise on the perk.</p></details>
+    <details><summary>Where does it work?</summary><p>The East Coast of Australia from Melbourne to Cairns, including Sydney, Byron Bay, Surfers Paradise, Brisbane, Noosa, Rainbow Beach, Airlie Beach, Magnetic Island and Mission Beach.</p></details>
+    <details><summary>I run a venue. How do I get on Perks?</summary><p><a href="/venues/">See the venue page</a> to list your bar, restaurant or activity.</p></details>
+  </div>
+</div></section>
+
+<section class="sec vband"><div class="w">
+  <div><div class="eyebrow">For venues</div><h2>Want travellers through your door?</h2></div>
+  <a class="btn coral" href="/venues/">List your venue</a>
+</div></section>
+
+<footer class="foot"><div class="w">
+  <div>Traveller Perks by ULTIMATE · perks.ultimate.travel</div>
+  <nav><a href="/app/">Open the app</a><a href="/venues/">For venues</a><a href="/admin/">Venue sign in</a><button type="button" data-contact>Contact us</button></nav>
+</div></footer>
+
+<div class="modal" id="cm" role="dialog" aria-modal="true" aria-labelledby="cmh"><div class="box">
+  <h3 id="cmh">Message the team</h3>
+  <label for="cmn">Your name</label><input id="cmn" autocomplete="name">
+  <label for="cme">Your email</label><input id="cme" type="email" autocomplete="email">
+  <label for="cmm">Message</label><textarea id="cmm" rows="4"></textarea>
+  <div class="row"><button class="btn ghost" type="button" data-close>Cancel</button><button class="btn teal" type="button" id="cmsend">Send</button></div>
+</div></div>
+
+<script>
+const H=__HOME__;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ph=(src,alt)=>src?`<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" onerror="this.remove()">`:'';
+document.getElementById('stats').innerHTML=[[H.counts.perks,'Perks'],[H.counts.stops,'Stops'],[H.counts.acts,'Activities to book']].map(([n,l])=>`<div><b>${n}</b>${l}</div>`).join('');
+const feed=H.perks.slice(0,10);
+document.getElementById('feed').innerHTML=[...feed,...feed].map(p=>`<div class="mini">${p.photo?`<img src="${esc(p.photo)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph'}))">`:'<div class="ph"></div>'}<div><b>${esc(p.name)}</b><small style="color:#737778;font-size:11px">${esc(p.townName)}</small><br><span>${esc(p.offer)}</span></div></div>`).join('');
+document.getElementById('offergrid').innerHTML=H.perks.map(p=>`<a class="oc" href="/app/#perk-${esc(p.id)}"><div class="im">${ph(p.photo,p.name)}<span class="tag">${esc(p.townName)}</span></div><div class="deal ${p.offer.length>34?'l':''}">${esc(p.offer.toUpperCase())}</div><div class="nm">${esc(p.name)}<small>${esc(p.cat)}</small></div></a>`).join('');
+document.getElementById('stopgrid').innerHTML=H.towns.map(t=>`<a class="stop" href="/app/#city-${esc(t.id)}">${ph(t.photo,t.name)}<span class="t"><b>${esc(t.name)}</b><span class="pills">${t.perks?`<i class="pill p">${t.perks} ${t.perks===1?'PERK':'PERKS'}</i>`:''}${t.acts?`<i class="pill a">${t.acts} ACTIVITIES</i>`:''}</span></span></a>`).join('');
+document.getElementById('actgrid').innerHTML=H.acts.map(a=>`<a class="ac" href="/app/#act-${esc(a.id)}"><div class="im">${ph(a.img,a.title)}<span class="inst">Instant confirmation</span></div><div class="bd"><b>${esc(a.title)}</b><small>${esc(a.townName)}${a.dur?' · '+esc(a.dur):''}</small><br>${a.price?`<span class="pr">From $${esc(a.price)}</span>`:''}</div></a>`).join('');
+/* QR via inline generator is heavy; use a simple link-styled fallback */
+(function(){const q=document.getElementById('qr');q.src='data:image/svg+xml;utf8,'+encodeURIComponent(H.qr);})();
+const cm=document.getElementById('cm');
+document.addEventListener('click',e=>{if(e.target.closest('[data-contact]')){cm.classList.add('on');document.getElementById('cmn').focus()} if(e.target.closest('[data-close]')||e.target===cm)cm.classList.remove('on')});
+document.getElementById('cmsend').onclick=()=>{const g=id=>document.getElementById(id).value.trim();location.href='mailto:info@ultimate.travel?subject='+encodeURIComponent('Traveller Perks: message from '+g('cmn'))+'&body='+encodeURIComponent(g('cmm')+'\n\n'+g('cmn')+'\n'+g('cme'));cm.classList.remove('on')};
+</script>
+</body>
+</html>
