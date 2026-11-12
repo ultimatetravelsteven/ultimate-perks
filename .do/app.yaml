@@ -13,7 +13,7 @@ static_sites:
     envs:
       - key: SUPABASE_URL
         scope: BUILD_TIME
-        value: ""
+        value: "https://cnqxmefmnfrvtftyhnzn.supabase.co"
       - key: SUPABASE_ANON_KEY
         scope: BUILD_TIME
         value: ""
