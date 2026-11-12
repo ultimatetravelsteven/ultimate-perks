@@ -136,10 +136,37 @@ input.i:focus,select.i:focus,textarea.i:focus{outline:2px solid var(--mint);bord
 .thumbs .t button{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:12px;cursor:pointer;line-height:20px;padding:0}
 .drop{border:2px dashed #BFD6D9;border-radius:12px;padding:14px;text-align:center;color:var(--ink3);font-size:13px;cursor:pointer;background:#FAFCFC}
 /* // CSS NAME: perks-admin-login-logo // */
-.login-logo{background:#4ECAC2;border-radius:14px;display:flex;justify-content:center;align-items:center;overflow:hidden}
-.login-logo img{display:block;width:100%;max-width:340px;height:auto}
 .login .box h1{text-align:center}
 .login .box>.muted{text-align:center}
+/* // CSS NAME: perks-admin-login-lockup // */
+.byline{order:2;display:flex;align-items:center;gap:5px;align-self:flex-end;margin-top:2px}
+.byline span{font-family:var(--text);font-weight:600;font-size:10px;line-height:1;color:#fff;opacity:.9}
+.byline img{width:52px;display:block}
+.lockup{order:1;position:relative;width:100%;height:44px;margin:0}
+.lockup .lk{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;overflow:visible;animation-duration:13s;animation-iteration-count:infinite;animation-delay:var(--d)}
+.lockup .lk.short{animation-name:lkShort}
+.lockup .lk.long{animation-name:lkLong}
+.lockup svg{display:block;overflow:visible;width:auto;height:38px;flex-shrink:0}
+.lockup .plain{position:relative;display:block;animation:slide 13s infinite;animation-delay:var(--d)}
+.lockup .stamp{position:relative;display:block;transform-origin:50% 60%;animation:stamp 13s infinite;animation-delay:var(--d)}
+.sun{position:absolute;right:-20px;top:-14px;width:40px;height:40px;opacity:0;animation:sun 13s infinite;animation-delay:var(--d)}
+.sun svg{width:40px!important;height:40px!important;filter:drop-shadow(0 0 5px rgba(255,213,74,.45))}
+@keyframes lkShort{0%{opacity:0}2.3%,11.9%{opacity:1}13.8%,100%{opacity:0}}
+@keyframes lkLong{0%{opacity:0}2.3%,47.7%{opacity:1}50.8%,100%{opacity:0}}
+@keyframes slide{0%{transform:translateY(10px)}2.3%,11.9%{transform:none}13.8%,100%{transform:translateY(-8px)}}
+@keyframes stamp{0%{transform:scale(1.6) rotate(-9deg)}2.3%{transform:scale(.94) rotate(-2deg)}3.8%{transform:scale(1.03) rotate(-3deg)}5.4%,47.7%{transform:scale(1) rotate(-3deg)}50.8%,100%{transform:scale(.96) rotate(-3deg)}}
+@keyframes sun{0%,3.1%{opacity:0;transform:translateY(14px) scale(.4) rotate(0)}6.9%{opacity:1;transform:translateY(0) scale(1.1) rotate(40deg)}10%{opacity:1;transform:scale(1) rotate(60deg)}46.9%{opacity:1;transform:scale(1) rotate(200deg)}50%,100%{opacity:0;transform:scale(.8) rotate(220deg)}}
+.top{position:relative}
+.rays{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.rays::before{animation-delay:var(--rd,0s)!important;content:"";position:absolute;left:50%;top:60%;width:900px;height:900px;margin:-450px 0 0 -450px;background:repeating-conic-gradient(rgba(255,255,255,.10) 0 9deg,transparent 9deg 18deg);animation:spin 60s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lockup,.byline,.seg{position:relative;z-index:1}
+@media (prefers-reduced-motion:reduce){.lockup .lk,.lockup .stamp,.lockup .plain,.sun,.rays::before{animation:none}.lockup .lk.long{opacity:1}.sun{opacity:1}}
+.login-logo{position:relative;overflow:hidden;background:#4ECAC2;border-radius:14px;padding:22px 18px 12px;display:flex;flex-direction:column;align-items:stretch}
+.login-logo .lockup{height:52px}
+.login-logo .lockup svg{height:42px;max-width:100%}
+.login-logo .byline{align-self:center;margin-top:8px}
+
 </style>
 <script src="/config.js"></script>
 <script type="module" src="/auth.js"></script>
@@ -149,6 +176,16 @@ input.i:focus,select.i:focus,textarea.i:focus{outline:2px solid var(--mint);bord
 <script>
 const D=__DATA__;
 const LOGO_WHITE='data:image/png;base64,__LOGO__';
+function bigWord(word){
+  const W=Math.round(word.length*92), t=(x,y,e)=>`<text x="${W/2+x}" y="${y}" text-anchor="middle" font-family="Work Sans, sans-serif" font-weight="900" font-size="130" ${e}>${word}</text>`;
+  return `<svg class="wide" viewBox="0 0 ${W} 110" role="img" aria-label="${word}">${t(9,109,'fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round"')}${t(0,100,'fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round"')}${t(0,100,'fill="#FFFFFF"')}</svg>`;
+}
+/* one big Aussie sun behind PERKS */
+const SPARK = `<span class="sun" aria-hidden="true"><svg viewBox="0 0 48 48" width="40" height="40"><g stroke="#FFD54A" stroke-opacity=".55" stroke-width="5.6" stroke-linecap="round"><path d="M24 3v7M24 38v7M3 24h7M38 24h7M9.2 9.2l5 5M33.8 33.8l5 5M9.2 38.8l5-5M33.8 14.2l5-5"/></g><g stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"><path d="M24 3v7M24 38v7M3 24h7M38 24h7M9.2 9.2l5 5M33.8 33.8l5 5M9.2 38.8l5-5M33.8 14.2l5-5"/></g><circle cx="24" cy="24" r="9.6" fill="#FFF8DC" stroke="#FFD54A" stroke-opacity=".7" stroke-width="2"/></svg></span>`;
+const T0=performance.now(); const HPHASE=()=>((performance.now()-T0)/1000)%13;
+const LOCKUP = () => `<span class="rays" aria-hidden="true" style="--rd:-${(((performance.now()-T0)/1000)%60).toFixed(2)}s"></span><div class="byline"><span>by</span><img src="${LOGO_WHITE}" alt="ULTIMATE"></div>
+  <div class="lockup" role="img" aria-label="East Coast Australia Traveller Perks">
+  ${['EAST COAST','AUSTRALIA','TRAVELLER','PERKS'].map((w,i)=>`<div class="lk ${w==='PERKS'?'long':'short'}" style="--d:${(i*1.8-HPHASE()).toFixed(2)}s" aria-hidden="true"><span class="${w==='PERKS'?'stamp':'plain'}">${w==='PERKS'?SPARK:''}${bigWord(w)}</span></div>`).join('')}</div>`;
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const TOWN=k=>(D.towns[k]||{}).name||k;
 const TOWNS=Object.keys(D.towns);
@@ -605,7 +642,7 @@ function reports(){const t=S.tab||'exp';const st=DB.settings;
 /* ---------- shell ---------- */
 function render(){
   const r=$('#root');
-  if(!S.role){r.innerHTML=`<div class="login"><div class="box"><div class="login-logo"><img src="/assets/perks-logo.gif" alt="ULTIMATE Perks" width="600" height="340"></div><h1>Traveller Perks</h1><div class="muted">Venue and admin sign-in · perks.ultimate.travel</div>
+  if(!S.role){r.innerHTML=`<div class="login"><div class="box"><div class="login-logo">${LOCKUP()}</div><h1>Traveller Perks</h1><div class="muted">Venue and admin sign-in · perks.ultimate.travel</div>
     <label class="f">Email<input class="i" type="email" placeholder="you@yourvenue.com.au"></label><label class="f">Password<input class="i" type="password"></label>
     ${window.PerksAuth&&PerksAuth.live?`<button class="btn mint" data-act="glogin" data-p="google">Continue with Google</button><button class="btn" data-act="elogin">Email me a sign-in link</button><div class="muted">Venues and admins only. Ask the Perks team to add your email.</div>`:`<button class="btn mint" data-act="login" data-r="venue">Sign in as a venue (demo: Flight Club)</button>
     <button class="btn" data-act="login" data-r="admin">Sign in as Perks admin (demo)</button>`}

@@ -33,7 +33,6 @@ fs.copyFileSync(path.join(root, 'src/auth.js'), path.join(out, 'auth.js'));
 fs.writeFileSync(path.join(out, 'config.js'),
   `window.PERKS_CONFIG=${JSON.stringify({ supabaseUrl: process.env.SUPABASE_URL || '', supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '' })};\n`);
 fs.copyFileSync(path.join(root, 'assets/logo-white.png'), path.join(out, 'assets/logo-white.png'));
-fs.copyFileSync(path.join(root, 'assets/perks-logo.gif'), path.join(out, 'assets/perks-logo.gif'));
 for (const f of fs.readdirSync(path.join(root, 'assets/fonts'))) fs.copyFileSync(path.join(root, 'assets/fonts', f), path.join(out, 'assets/fonts', f));
 fs.writeFileSync(path.join(out, 'app/manifest.webmanifest'), JSON.stringify({
   name: 'Traveller Perks', short_name: 'Perks', start_url: '/app/', scope: '/app/', display: 'standalone',
