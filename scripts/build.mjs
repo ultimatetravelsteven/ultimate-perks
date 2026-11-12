@@ -46,7 +46,7 @@ for (const a of (AD.acts || [])) { if (!isUrl(a.img) || seenT.has(a.town)) conti
 const HOME = {
   counts: { perks: AD.perks.length, stops: Object.keys(AD.towns).length, acts: (AD.acts || []).length },
   perks: sample.map(p => ({ id: p.id, name: p.name, cat: p.cat, townName: townName(p.town), offer: (p.offers[0].t || p.offer || '').replace(/\.$/, ''), photo: firstPhoto(p) })),
-  towns: Object.entries(AD.towns).map(([id, t]) => ({ id, name: t.name.split(' / ')[0], photo: isUrl(t.photo) ? t.photo : '', perks: pc[id] || 0, acts: ac[id] || 0 })),
+  towns: Object.entries(AD.towns).map(([id, t]) => ({ id, name: t.name.split(' / ')[0], photo: isUrl(t.photo) ? t.photo : '', alt: ((AD.acts || []).find(a => a.town === id && isUrl(a.img)) || {}).img || '', perks: pc[id] || 0, acts: ac[id] || 0 })),
   acts: actSample.map(a => ({ id: a.id, title: a.title, townName: townName(a.town), dur: a.dur || '', price: a.price ? String(Math.round(+a.price)) : '', img: a.img })),
   qr: r('assets/app-qr.svg').toString().replace(/^<\?xml[^>]*>\s*/, ''),
 };
