@@ -1,0 +1,22 @@
+# DigitalOcean App Platform spec. Apps > Create App > GitHub > ultimate-perks, or: doctl apps create --spec .do/app.yaml
+name: ultimate-perks
+region: syd
+static_sites:
+  - name: web
+    github:
+      repo: ultimatetravelsteven/ultimate-perks
+      branch: main
+      deploy_on_push: true
+    build_command: npm run build
+    output_dir: dist
+    error_document: 404.html
+    envs:
+      - key: SUPABASE_URL
+        scope: BUILD_TIME
+        value: ""
+      - key: SUPABASE_ANON_KEY
+        scope: BUILD_TIME
+        value: ""
+domains:
+  - domain: perks.ultimate.travel
+    type: PRIMARY

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Traveller Perks back end | perks.ultimate.travel</title>
+<style>
+/* // CSS NAME: perks-fonts // */
+@font-face{font-family:"Work Sans";font-weight:500;font-display:swap;src:url(data:font/woff2;base64,__WS500__) format("woff2")}
+@font-face{font-family:"Work Sans";font-weight:700;font-display:swap;src:url(data:font/woff2;base64,__WS700__) format("woff2")}
+@font-face{font-family:"Work Sans";font-weight:900;font-display:swap;src:url(data:font/woff2;base64,__WS900__) format("woff2")}
+
+/* // CSS NAME: perks-tokens // */
+:root{--mint:#4ECAC2;--teal:#00ADBC;--deep:#1b8a9f;--ink:#123B4A;--ink2:#43484A;--ink3:#737778;--line:#E3E8E9;--bg:#F4F8F8;--paper:#fff;--ok:#1f8a5b;--warn:#b26a00;--bad:#b3261e;
+--disp:"Work Sans","Arial Black",system-ui,sans-serif;--text:"Work Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.5 var(--text)}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--disp);font-weight:900;text-transform:uppercase;margin:0;line-height:1.05;letter-spacing:.01em}
+h1{font-size:26px}h2{font-size:17px}h3{font-size:14px}
+a{color:var(--deep)}
+
+/* // CSS NAME: perks-layout // */
+.app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+.side{background:var(--ink);color:#fff;padding:18px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{display:flex;flex-direction:column;gap:6px;padding:4px 8px 16px}
+.brand img{display:block}
+.brand small{font-size:11px;opacity:.7;letter-spacing:.08em;text-transform:uppercase}
+.nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;font-weight:700;font-size:14px;color:#d8e6e9;width:100%;box-sizing:border-box}
+.nav button:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav button.on{background:var(--mint);color:#fff}
+.nav .cnt{margin-left:auto;background:#fff;color:var(--ink);border-radius:20px;font-size:11px;padding:0 7px;line-height:18px}
+.nav .sep{font-size:11px;opacity:.55;letter-spacing:.1em;text-transform:uppercase;padding:14px 10px 4px}
+.main{min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 28px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.top .who{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink2)}
+/* // CSS NAME: perks-portal-venue-logo // */
+.top .who .vlogo{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#fff;border:1px solid var(--line,#e5e7eb);margin-left:6px}
+.wrap{padding:24px 28px 60px;display:flex;flex-direction:column;gap:20px;max-width:1280px}
+.asbar{background:var(--deep);color:#fff;padding:10px 28px;display:flex;gap:12px;align-items:center;justify-content:space-between;font-weight:700;font-size:14px;flex-wrap:wrap}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.g6{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+@media(max-width:860px){.app{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap}.brand{padding:4px 8px}.nav{display:flex;flex-wrap:wrap;gap:4px}.nav button{width:auto}.nav .sep{display:none}.wrap,.top{padding-left:16px;padding-right:16px}}
+
+/* // CSS NAME: perks-cards // */
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card .hd{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.kpi b{display:block;font-family:var(--disp);font-weight:900;font-size:26px;line-height:1.1}
+.kpi span{font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.kpi i{font-style:normal;font-size:12px;color:var(--ink3)}
+.muted{color:var(--ink3);font-size:13px}
+.note{background:#E8F7F6;border:1px solid #BFE9E5;border-radius:12px;padding:10px 14px;font-size:13px;color:var(--ink)}
+.warnbox{background:#FFF6E5;border:1px solid #F3D9A4;border-radius:12px;padding:10px 14px;font-size:13px}
+
+/* // CSS NAME: perks-buttons // */
+.btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--ink);color:#fff;font-weight:700;font-size:13px;padding:9px 14px;border-radius:10px;white-space:nowrap;box-sizing:border-box}
+.btn:hover{background:#0b2a36}
+.btn.mint{background:var(--mint)}.btn.mint:hover{background:var(--deep)}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.ghost:hover{border-color:var(--ink)}
+.btn.sm{padding:6px 10px;font-size:12px;border-radius:8px}
+.btn.danger{background:#fff;color:var(--bad);border:1px solid #f0c9c6}.btn.danger:hover{background:#fdf0ef}
+.btn:focus-visible,.nav button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:#EEF2F3;color:var(--ink2);white-space:nowrap}
+.chip.live{background:#E3F5EC;color:var(--ok)}.chip.pending{background:#FFF1D6;color:var(--warn)}.chip.bad{background:#FBE6E4;color:var(--bad)}.chip.mint{background:#E0F6F4;color:var(--deep)}
+
+/* // CSS NAME: perks-forms // */
+label.f{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em}
+input.i,select.i,textarea.i{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;font-size:14px;text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink)}
+textarea.i{min-height:84px;resize:vertical}
+input.i:focus,select.i:focus,textarea.i:focus{outline:2px solid var(--mint);border-color:var(--mint)}
+.toggle{position:relative;width:40px;height:22px;flex:none}
+.toggle input{opacity:0;width:0;height:0}
+.toggle span{position:absolute;inset:0;background:#cfd6d8;border-radius:20px;cursor:pointer;transition:.2s}
+.toggle span:before{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked+span{background:var(--mint)}
+.toggle input:checked+span:before{transform:translateX(18px)}
+
+/* // CSS NAME: perks-tables // */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:hover td{background:#FAFCFC}
+.tw{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#fff}
+.av{width:34px;height:34px;border-radius:9px;background:var(--mint);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex:none;overflow:hidden;position:relative}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#fff}
+.bar{height:7px;background:#EAEFF0;border-radius:6px;overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:var(--mint)}
+.bar.lo i{background:#E3A23B}.bar.vlo i{background:#D9534F}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tabs button{all:unset;cursor:pointer;padding:9px 14px;font-weight:700;font-size:13px;color:var(--ink3);border-bottom:3px solid transparent}
+.tabs button.on{color:var(--ink);border-color:var(--mint)}
+
+/* // CSS NAME: perks-ring // */
+.ring{display:flex;gap:18px;align-items:center}
+.ring svg{flex:none}
+.check{display:flex;flex-direction:column;gap:6px}
+.check div{display:flex;gap:10px;align-items:center;font-size:14px}
+.tick{width:20px;height:20px;border-radius:50%;flex:none;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;background:var(--mint)}
+.tick.no{background:#fff;border:2px solid #cfd6d8}
+
+/* // CSS NAME: perks-modal // */
+.ov{position:fixed;inset:0;background:rgba(18,59,74,.45);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px;z-index:50;overflow:auto}
+.md{background:#fff;border-radius:18px;width:min(560px,100%);padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.md.wide{width:min(820px,100%)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-weight:700;font-size:14px;z-index:60;box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.eway{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;background:#FBFDFD}
+.eway .lock{font-size:12px;color:var(--ink3);display:flex;gap:6px;align-items:center}
+
+/* // CSS NAME: perks-email-preview // */
+.mail{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.mail .mh{background:var(--mint);color:#fff;padding:18px 22px}
+.mail .mh img{width:96px;display:block;margin-bottom:6px}
+.mail .mb{padding:20px 22px;display:flex;flex-direction:column;gap:12px;font-size:15px}
+.mail .mf{padding:12px 22px;font-size:11px;color:var(--ink3);border-top:1px solid var(--line)}
+.meta{font-size:12px;color:var(--ink3);padding:10px 14px;border-bottom:1px solid var(--line);background:#FAFCFC}
+
+/* // CSS NAME: perks-phone-preview // */
+.push{background:#1d1f22;border-radius:22px;padding:16px;color:#fff;max-width:320px}
+.push .n{background:rgba(255,255,255,.14);border-radius:14px;padding:10px 12px;display:flex;gap:10px}
+.push .ic{width:30px;height:30px;border-radius:8px;background:var(--mint);flex:none;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px}
+
+/* // CSS NAME: perks-login // */
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--mint);padding:24px}
+.login .box{background:#fff;border-radius:22px;padding:30px;width:min(440px,100%);display:flex;flex-direction:column;gap:14px}
+.mbars{display:flex;gap:6px;align-items:flex-end;height:90px}
+.mbars div{flex:1;background:var(--mint);border-radius:5px 5px 0 0;position:relative;min-height:2px}
+.mbars div span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:10px;color:var(--ink3)}
+.mbars div em{position:absolute;top:-17px;left:0;right:0;text-align:center;font-size:10px;font-style:normal;color:var(--ink2);font-weight:700}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.thumbs .t{width:92px;height:70px;border-radius:10px;background:#E6EEEF center/cover;position:relative;overflow:hidden;border:1px solid var(--line)}
+.thumbs .t img{width:100%;height:100%;object-fit:cover}
+.thumbs .t button{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:12px;cursor:pointer;line-height:20px;padding:0}
+.drop{border:2px dashed #BFD6D9;border-radius:12px;padding:14px;text-align:center;color:var(--ink3);font-size:13px;cursor:pointer;background:#FAFCFC}
+</style>
+<script src="/config.js"></script>
+<script type="module" src="/auth.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const D=__DATA__;
+const LOGO_WHITE='data:image/png;base64,__LOGO__';
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const TOWN=k=>(D.towns[k]||{}).name||k;
+const TOWNS=Object.keys(D.towns);
+const DAY=864e5, NOW=Date.now();
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>(n<0?'-':'')+'$'+Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const fmt=d=>d?new Date(d).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}):'—';
+const fmtT=d=>new Date(d).toLocaleString('en-AU',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'});
+const daysTo=d=>Math.ceil((d-NOW)/DAY);
+const initials=n=>n.replace(/[^A-Za-z ]/g,'').split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+let seed=11;const rnd=()=>(seed=(seed*16807)%2147483647,(seed-1)/2147483646);
+const pick=a=>a[Math.floor(rnd()*a.length)];
+const uid=p=>p+Math.random().toString(36).slice(2,8).toUpperCase();
+const store={get(){try{return JSON.parse(localStorage.getItem('perksPortal_v4'))}catch(e){return null}},set(v){try{localStorage.setItem('perksPortal_v4',JSON.stringify(v))}catch(e){toast('Browser storage is full. Changes stay until you reload.')}}};
+
+const parseCSV=s=>{const out=[];let row=[],f='',q=false;for(let i=0;i<s.length;i++){const c=s[i];if(q){if(c==='"'){if(s[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else if(c==='"')q=true;else if(c===','){row.push(f);f=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&s[i+1]==='\n')i++;row.push(f);out.push(row);row=[];f=''}else f+=c}if(f||row.length){row.push(f);out.push(row)}return out.filter(r=>r.some(x=>x.trim()))};
+const detectProv=c=>/rezdy/i.test(c)?'Rezdy':/fareharbor/i.test(c)?'FareHarbor':/bokun/i.test(c)?'Bokun':/checkfront/i.test(c)?'Checkfront':/trekksoft/i.test(c)?'TrekkSoft':/peek/i.test(c)?'Peek':/xola/i.test(c)?'Xola':c?'Other widget':'';
+const trackLink=v=>`https://perks.ultimate.travel/go/${v.id}`;
+/* ---------- sample data (clearly sample) ---------- */
+function seedData(){
+  seed=11;
+  const settings={listing:299,featuredWeek:79,push:99,extraLocation:99,offerPack:49,promos:[{code:'PERKS6FREE',months:6,uses:3,active:true,note:'Free 6-month listing'}],gstIncl:true,ewayMode:'Sandbox',ewayKey:'',ewayPass:'',ewayPublic:'',reviews:true,fromEmail:'perks@ultimate.travel',admins:[{n:'Steve',e:'steven@ultimate.travel',role:'Owner'}]};
+  const venues=D.perks.map((p,i)=>{
+    const lvl=[1,.9,.5,.8,.7,1,.4,.6,.9,.3,.8,.6,1,.5,.7,.4,.9,1,.6,.8,.5,.7][i%22];
+    const statuses={5:'pending',9:'expired',15:'draft'};
+    const exp=NOW+Math.round((rnd()*420-50))*DAY;
+    const hours={};(p.hours||[]).forEach(([ds,o,c])=>ds.forEach(d=>hours[d]=[o,c]));
+    const v={id:String(p.id),name:p.name,town:p.town,cat:p.cat,addr:p.addr,lat:p.lat,lon:p.lon,
+      logo:lvl>.35?p.logo:'',photos:(p.photos&&p.photos.length?p.photos:[p.photo]).filter(Boolean).slice(0,lvl>.75?6:lvl>.45?2:1),
+      desc:lvl>.55?`${p.name} in ${TOWN(p.town)}. ${p.offer}`:'',
+      phone:lvl>.65?'(07) 5500 '+String(1000+i*37).slice(-4):'',web:lvl>.5?'https://'+p.name.toLowerCase().replace(/[^a-z]/g,'')+'.com.au':'',book:'',insta:lvl>.8?'@'+p.name.toLowerCase().replace(/[^a-z]/g,''):'',
+      hours,hoursReal:!p.sampleHours&&lvl>.6,
+      offers:(p.offers&&p.offers.length?p.offers:[{t:p.offer}]).map(o=>({id:uid('O'),t:o.t,terms:p.terms||'',when:o.when||null,paused:false,flashUntil:0})),
+      contact:{n:pick(['Jess','Tom','Mia','Liam','Ava','Noah','Zoe','Sam'])+' (manager)',e:'manager@'+p.name.toLowerCase().replace(/[^a-z]/g,'')+'.example'},
+      status:statuses[i]||'live',expires:statuses[i]==='expired'?NOW-12*DAY:exp<NOW?NOW+20*DAY:exp,autoRenew:lvl>.6,
+      card:lvl>.45?{brand:pick(['Visa','Mastercard']),last4:String(4000+Math.floor(rnd()*5999)).slice(-4),exp:'0'+(1+Math.floor(rnd()*8))+'/2'+(7+Math.floor(rnd()*3)),token:'9'+String(Math.floor(rnd()*1e11)).padStart(11,'0')}:null,
+      featuredUntil:D.featured.includes(+p.id)?NOW+Math.round(5+rnd()*30)*DAY:0,
+      booking:p.cat==='Activity'?(i%3===0?{mode:'link',url:'https://'+p.name.toLowerCase().replace(/[^a-z]/g,'')+'.com.au/book',code:'',provider:'Own website'}:{mode:'widget',url:'',code:'<script src="https://'+pick(['rezdy','fareharbor','bokun'])+'.com/embed.js" data-id="'+(1000+i)+'"><\/script>',provider:''}):{mode:'',url:'',code:'',provider:''},
+      bstats:p.cat==='Activity'?{taps:Math.round(120+rnd()*500),opens:0,bookings:0,value:0}:{taps:0,opens:0,bookings:0,value:0},
+      emails:{profile:true,monthly:true,stats:true},notes:'',joined:NOW-Math.round(60+rnd()*500)*DAY,
+      stats:{views:Math.round(80+rnd()*2400*lvl),saves:Math.round(5+rnd()*260*lvl),months:Array.from({length:6},()=>Math.round(rnd()*120*lvl))},
+      created:NOW};
+    v.stats.uses=v.stats.months[5];
+    if(v.booking.mode==='widget')v.booking.provider=detectProv(v.booking.code);
+    if(v.bstats.taps){v.bstats.opens=Math.round(v.bstats.taps*.82);v.bstats.bookings=Math.round(v.bstats.opens*(.08+rnd()*.12));v.bstats.value=v.bstats.bookings*Math.round(69+rnd()*120)*Math.round(1+rnd()*2)}
+    return v;});
+  const first=['Sophie','Jack','Emma','Lucas','Chloe','Oliver','Hannah','Ben','Lena','Max','Freya','Tom','Isla','Finn','Ella','Leo','Mia','Ruby','Noah','Amelie','Harry','Saskia','Jonas','Grace','Ollie','Nina','Felix','Ivy','Theo','Lotte'];
+  const tours=['East Coast Explorer 21 day','Sydney to Cairns 14 day','Fraser and Whitsundays 10 day','Byron to Brisbane 5 day'];
+  const route=['sydney','byron','surfers','brisbane','noosa','rainbow','airlie','magnetic','mission','cairns'];
+  const members=Array.from({length:64},(_,i)=>{const at=Math.floor(rnd()*route.length);return{id:'M'+(1000+i),n:pick(first)+' '+String.fromCharCode(65+Math.floor(rnd()*26))+'.',e:'traveller'+(1000+i)+'@example.com',ref:'UT-'+(48000+Math.floor(rnd()*9000)),tour:pick(tours),town:route[at],next:route[Math.min(at+1,route.length-1)],arrive:NOW+Math.round(rnd()*9)*DAY,joined:NOW-Math.round(rnd()*80)*DAY,via:pick(['Apple','Google','Facebook','Booking number']),used:Math.floor(rnd()*9),saved:Math.floor(rnd()*14),status:rnd()<.04?'blocked':'active',lastSeen:NOW-Math.round(rnd()*72)*36e5}});
+  const tx=[];
+  venues.forEach(v=>{ if(v.status==='draft')return;
+    tx.push({id:'EW'+(10233000+tx.length*7),date:v.expires-365*DAY<NOW?v.expires-365*DAY:NOW-30*DAY,vid:v.id,type:'Annual listing',amount:settings.listing,status:'Approved',method:v.card?`${v.card.brand} •• ${v.card.last4}`:'Visa •• 1111'});
+    if(v.featuredUntil)tx.push({id:'EW'+(10233000+tx.length*7),date:v.featuredUntil-28*DAY,vid:v.id,type:'Featured (4 weeks)',amount:settings.featuredWeek*4,status:'Approved',method:v.card?`${v.card.brand} •• ${v.card.last4}`:'Visa •• 1111'});
+    if(rnd()<.35)tx.push({id:'EW'+(10233000+tx.length*7),date:NOW-Math.round(rnd()*150)*DAY,vid:v.id,type:'Push notification',amount:settings.push,status:'Approved',method:v.card?`${v.card.brand} •• ${v.card.last4}`:'Visa •• 1111'});});
+  tx.push({id:'EW10239991',date:NOW-3*DAY,vid:venues[13].id,type:'Annual listing renewal',amount:settings.listing,status:'Declined',method:'Visa •• 0019',reason:'Card expired'});
+  tx.sort((a,b)=>b.date-a.date);
+  const pushes=[
+    {id:uid('P'),title:'2-for-1 cocktails tonight',body:"Show the app at the bar. Until 9pm.",aud:'in:cairns',vid:venues[18].id,when:NOW-2*DAY,status:'Sent',reach:212,opens:71,paid:'Venue $99'},
+    {id:uid('P'),title:'New in Noosa: 3 perks',body:'Tap to see what is on this week.',aud:'in:noosa',vid:'',when:NOW-6*DAY,status:'Sent',reach:148,opens:52,paid:'House'},
+    {id:uid('P'),title:'Happy hour starts now',body:'Half-price jugs at Bounce until 7pm.',aud:'in:airlie',vid:venues[13].id,when:NOW+1*DAY,status:'Awaiting approval',reach:0,opens:0,paid:'Venue $99'}];
+  const autos=[
+    {k:'welcome',on:true,name:'Welcome + finish your profile',when:'Straight after sign-up',subj:'Welcome to Traveller Perks, {{venue}}'},
+    {k:'profile',on:true,name:'Profile reminder',when:'While under 100%: day 2, day 7, day 14, then on the 15th of each month',subj:'Your Perks profile is {{percent}}% complete'},
+    {k:'monthly',on:true,name:'Monthly: update your deals',when:'1st of each month, 9am venue time',subj:'Are your perks still right for {{month}}?'},
+    {k:'stats',on:true,name:'Monthly stats',when:'2nd of each month, 9am venue time',subj:'{{venue}}: {{uses}} perks used last month'},
+    {k:'renewal',on:true,name:'Renewal reminders',when:'30, 14, 7 and 1 day before the listing ends',subj:'Your listing ends on {{expires}}'},
+    {k:'expired',on:true,name:'Listing expired',when:'On the day, then 7 days later',subj:'{{venue}} is no longer showing in the app'},
+    {k:'card',on:true,name:'Card failed or expiring',when:'When a charge fails, and 30 days before card expiry',subj:'Please update your card for Traveller Perks'},
+    {k:'boost',on:true,name:'Featured and push receipts',when:'When a boost is paid, approved, starts and ends',subj:'Your {{boost}} is confirmed'}];
+  const reviews=[{vid:venues[0].id,who:'Sophie K.',stars:5,t:'Great night, the discount made it easy to stay for pizza.',ok:true},{vid:venues[18].id,who:'Jonas B.',stars:4,t:'Good vibe, perk worked with no fuss.',ok:true},{vid:venues[19].id,who:'Anon',stars:1,t:'Staff did not know about the perk.',ok:false}];
+  const log=[{t:NOW-2*36e5,a:'Profile reminder sent to 6 venues'},{t:NOW-5*36e5,a:'Push sent to 212 members in Cairns'},{t:NOW-26*36e5,a:'Payment approved: Flight Club, annual listing'}];
+  const brands=(D.brands||[]).map(b=>({...b,created:NOW-30*DAY}));
+  venues.forEach(v=>{if(v.id==='4')v.brandId='strike-bowling';if(v.id==='5')v.brandId='holey-moley'});
+  /* prospects imported from the target list: not live, placeholder offers */
+  (D.prospects||[]).forEach(r=>venues.push({id:r.id,name:r.name,town:r.town,cat:r.cat,addr:r.addr||'',lat:r.lat||'',lon:r.lon||'',logo:r.logo||'',photos:r.photo?[r.photo]:[],desc:'',phone:'',web:r.web||'',book:'',insta:'',hours:{},hoursReal:false,
+    offers:[{id:uid('O'),t:'Save 10%',terms:'Placeholder offer. Show the app to redeem. Confirm the real offer with the venue before going live.',when:null,paused:false,flashUntil:0}],
+    contact:{n:'',e:''},status:'prospect',priority:r.priority,suggested:r.suggested,category:r.category,needsCheck:r.needsCheck||'',expires:NOW,autoRenew:false,card:null,featuredUntil:0,booking:{mode:'',url:'',code:'',provider:''},bstats:{taps:0,opens:0,bookings:0,value:0},
+    emails:{profile:true,monthly:true,stats:true},notes:r.note||'',joined:NOW,brandId:r.brand||'',stats:{views:0,saves:0,uses:0,months:[0,0,0,0,0,0]}}));
+  return{v:1,brands,settings,venues,members,tx,pushes,autos,reviews,log,content:{pulled:D.eventsPulled||'11 Nov 2026'}};
+}
+let DB=store.get()||seedData();
+if(DB.settings.offerPack==null)DB.settings.offerPack=49;
+const OFFER_BASE=3;const offerCap=v=>OFFER_BASE+3*(v.offerPacks||0);const standingOffers=v=>v.offers.filter(o=>!o.flashUntil).length;
+DB.venues.forEach(v=>{const n=standingOffers(v);if(n>offerCap(v))v.offerPacks=Math.ceil((n-OFFER_BASE)/3)});
+let S={role:null,venueId:'1',viewAs:null,page:'dash',tab:null,q:'',ftown:'',fstatus:''};
+/* a venue that just signed up on perks.ultimate.travel */
+try{const su=JSON.parse(localStorage.getItem('perksSignup')||'null');if(su){const id='N'+su.paidAt;
+  if(!DB.venues.some(x=>x.id===id)){DB.venues.push({id,name:su.name,town:su.town,cat:su.cat,addr:su.addr,lat:'',lon:'',logo:su.logo,photos:su.photos,desc:'',phone:su.phone,web:'',book:'',insta:'',hours:{},hoursReal:false,
+    offers:[{id:uid('O'),t:su.offer,terms:su.terms,when:null,paused:false,flashUntil:0}],contact:{n:su.contact,e:su.email},status:'pending',expires:su.paidAt+(su.promo?su.promoMonths*30.4:365)*DAY,booking:su.booking||{mode:'',url:'',code:'',provider:''},bstats:{taps:0,opens:0,bookings:0,value:0},autoRenew:su.autoRenew,card:su.card,featuredUntil:0,
+    emails:{profile:true,monthly:true,stats:true},notes:'Signed up on the website',joined:su.paidAt,stats:{views:0,saves:0,uses:0,months:[0,0,0,0,0,0]}});
+    DB.tx.unshift({id:su.promo?'PROMO':'EW'+Math.floor(10240000+Math.random()*9e4),date:su.paidAt,vid:id,type:su.promo?`Listing, ${su.promoMonths} months free (${su.promo})`:'Annual listing',amount:su.promo?0:299,status:'Approved',method:su.method||'No charge'});if(su.promo){const pc=DB.settings.promos.find(c=>c.code===su.promo);if(pc)pc.uses++}DB.log.unshift({t:su.paidAt,a:'New venue signed up: '+su.name});}
+  localStorage.removeItem('perksSignup');store.set(DB);if(/new=1/.test(location.search)||window.__perksNew||(window.parent!==window&&window.parent.__perksNew)){S.role='venue';S.venueId=id}}}catch(e){}
+const save=()=>store.set(DB);
+const logA=a=>{DB.log.unshift({t:Date.now(),a});DB.log=DB.log.slice(0,60);save();};
+const V=id=>DB.venues.find(v=>v.id===id);
+const B=id=>(DB.brands||[]).find(b=>b.id===id);
+const brandLocs=b=>DB.venues.filter(v=>v.brandId===b);
+const cv=()=>V(S.role==='admin'?S.viewAs:S.venueId);
+
+/* ---------- profile completeness ---------- */
+function comp(v){
+  const live=v.offers.filter(o=>!o.paused);
+  const items=[
+    {k:'logo',l:'Upload your logo',done:!!v.logo,p:'profile'},
+    {k:'photos',l:'Add at least 3 photos',done:v.photos.length>=3,p:'profile'},
+    {k:'desc',l:'Write a short description (40+ characters)',done:(v.desc||'').length>=40,p:'profile'},
+    {k:'addr',l:'Confirm your address and map pin',done:!!v.addr&&!!v.lat,p:'profile'},
+    {k:'hours',l:'Set your real opening hours',done:v.hoursReal&&Object.keys(v.hours).length>0,p:'profile'},
+    {k:'offer',l:'Have at least one live offer',done:live.length>0,p:'offers'},
+    {k:'terms',l:'Add terms to every offer',done:live.length>0&&live.every(o=>(o.terms||'').length>3),p:'offers'},
+    {k:'phone',l:'Add a phone number',done:!!v.phone,p:'profile'},
+    {k:'web',l:'Add a website or booking link',done:!!(v.web||v.book),p:'profile'},
+    {k:'card',l:'Save a card so your listing renews',done:!!v.card,p:'billing'}];
+  const pct=Math.round(items.filter(i=>i.done).length/items.length*100);
+  return{pct,items,missing:items.filter(i=>!i.done)};
+}
+const ring=(pct,size=96)=>{const r=size/2-8,c=2*Math.PI*r;return`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${pct}% complete"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#EAEFF0" stroke-width="9"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${pct<50?'#E3A23B':'#4ECAC2'}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${c*pct/100} ${c}" transform="rotate(-90 ${size/2} ${size/2})"/><text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-family="Work Sans" font-weight="900" font-size="${size/4.2}" fill="#123B4A">${pct}%</text></svg>`};
+const pbar=p=>`<div class="bar ${p<50?'vlo':p<80?'lo':''}" title="${p}%"><i style="width:${p}%"></i></div>`;
+const av=v=>`<span class="av">${esc(initials(v.name))}${v.logo?`<img src="${esc(v.logo)}" alt="" onerror="this.remove()">`:''}</span>`;
+const chip=s=>`<span class="chip ${s==='live'||s==='Approved'||s==='Sent'||s==='active'?'live':s==='pending'||s==='Awaiting approval'||s==='draft'||s==='prospect'||s==='Scheduled'?'pending':s==='expired'||s==='suspended'||s==='Declined'||s==='blocked'||s==='Refunded'?'bad':''}">${esc(s)}</span>`;
+const expChip=d=>{const n=daysTo(d);return n<0?`<span class="chip bad">Ended ${-n}d ago</span>`:n<=30?`<span class="chip pending">${n}d left</span>`:`<span class="chip">${fmt(d)}</span>`};
+const inTown=t=>DB.members.filter(m=>m.status==='active'&&m.town===t).length;
+const arriving=t=>DB.members.filter(m=>m.status==='active'&&m.next===t&&m.arrive-NOW<7*DAY).length;
+
+/* ---------- toast + modal ---------- */
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+function modal(html,wide){closeModal();const o=document.createElement('div');o.className='ov';o.id='ov';o.innerHTML=`<div class="md ${wide?'wide':''}" role="dialog" aria-modal="true">${html}</div>`;o.addEventListener('click',e=>{if(e.target===o)closeModal()});document.body.appendChild(o);const f=o.querySelector('input,select,textarea,button');f&&f.focus()}
+function closeModal(){const o=$('#ov');o&&o.remove()}
+function confirmBox(title,msg,okLabel,fn,danger){modal(`<h2>${esc(title)}</h2><p style="margin:0">${msg}</p><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn ${danger?'danger':''}" id="okb">${esc(okLabel)}</button></div>`);$('#okb').onclick=()=>{closeModal();fn()}}
+
+/* ---------- CSV ---------- */
+function csv(name,rows){const s=rows.map(r=>r.map(c=>{c=String(c??'');return/[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'text/csv'}));a.download=name;document.body.appendChild(a);a.click();a.remove();toast('Downloaded '+name)}
+
+/* ---------- eWay checkout (sandbox simulation) ---------- */
+const luhn=n=>{n=n.replace(/\D/g,'');let s=0,a=false;for(let i=n.length-1;i>=0;i--){let d=+n[i];if(a){d*=2;if(d>9)d-=9}s+=d;a=!a}return n.length>=13&&s%10===0};
+function checkout({v,amount,desc,type,saveOnly,onPaid}){
+  const st=DB.settings, card=v.card, gst=st.gstIncl?amount/11:amount*.1, total=st.gstIncl?amount:amount*1.1;
+  modal(`<div class="hd row" style="justify-content:space-between"><h2>${saveOnly?'Update card':'Pay with card'}</h2><span class="chip ${st.ewayMode==='Live'?'live':'pending'}">eWay ${st.ewayMode}</span></div>
+  ${saveOnly?'':`<div class="note"><b>${esc(desc)}</b><br>${esc(v.name)} · ${money(total)} ${st.gstIncl?'incl.':'+'} GST (${money(gst)})</div>`}
+  ${card&&!saveOnly?`<label class="row" style="gap:10px"><input type="radio" name="pm" value="saved" checked> Saved card: ${card.brand} •• ${card.last4} (exp ${card.exp})</label><label class="row" style="gap:10px"><input type="radio" name="pm" value="new"> Use a new card</label>`:''}
+  <div class="eway" id="newcard" style="${card&&!saveOnly?'display:none':''}">
+    <label class="f">Name on card<input class="i" id="cn" autocomplete="cc-name" value="${esc(v.contact.n.replace(' (manager)',''))}"></label>
+    <label class="f">Card number<input class="i" id="cc" inputmode="numeric" autocomplete="cc-number" placeholder="4444 3333 2222 1111"></label>
+    <div class="row" style="flex-wrap:nowrap"><label class="f" style="flex:1">Expiry<input class="i" id="ce" placeholder="MM/YY" autocomplete="cc-exp"></label><label class="f" style="flex:1">CVN<input class="i" id="cv" inputmode="numeric" placeholder="123" autocomplete="cc-csc"></label></div>
+    ${saveOnly?'':`<label class="row" style="gap:8px;font-size:13px"><input type="checkbox" id="sv" checked> Save this card for renewals and boosts</label>`}
+    <div class="lock">In the live build these four fields are eWay Secure Fields (hosted by eWay). Card numbers never touch our server; we only keep eWay's token.</div>
+  </div>
+  <div class="muted">Sandbox test card: 4444 3333 2222 1111, any future expiry, any CVN. Nothing is charged in this test version.</div>
+  <div id="payerr" class="warnbox" style="display:none"></div>
+  <div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn mint" id="paybtn">${saveOnly?'Save card':'Pay '+money(total)}</button></div>`);
+  document.querySelectorAll('input[name=pm]').forEach(r=>r.onchange=()=>$('#newcard').style.display=r.value==='new'&&r.checked?'':($('input[name=pm]:checked').value==='new'?'':'none'));
+  $('#paybtn').onclick=()=>{
+    const useSaved=card&&!saveOnly&&$('input[name=pm]:checked').value==='saved';
+    let method;
+    if(!useSaved){const n=$('#cc').value.replace(/\s/g,''),e=$('#ce').value.trim();
+      const err=!luhn(n)?'That card number doesn\'t look right.':!/^(0[1-9]|1[0-2])\/\d{2}$/.test(e)?'Expiry should look like 08/28.':!/^\d{3,4}$/.test($('#cv').value)?'CVN is the 3 or 4 digits on the back.':'';
+      if(err){$('#payerr').style.display='';$('#payerr').textContent=err;return}
+      const brand=n[0]==='5'?'Mastercard':n[0]==='3'?'Amex':'Visa';
+      method=`${brand} •• ${n.slice(-4)}`;
+      if(saveOnly||$('#sv').checked)v.card={brand,last4:n.slice(-4),exp:e,token:'9'+String(Math.floor(Math.random()*1e11)).padStart(11,'0')};
+    } else method=`${card.brand} •• ${card.last4}`;
+    $('#paybtn').textContent='Processing…';$('#paybtn').style.pointerEvents='none';
+    setTimeout(()=>{closeModal();
+      if(saveOnly){save();logA(`Card updated: ${v.name}`);toast('Card saved');render();return}
+      const t={id:'EW'+Math.floor(10240000+Math.random()*90000),date:Date.now(),vid:v.id,type,amount:total,status:'Approved',method};
+      DB.tx.unshift(t);logA(`Payment approved: ${v.name}, ${type} ${money(total)}`);save();
+      modal(`<h2>Payment approved</h2><p style="margin:0">${money(total)} charged to ${esc(method)} for ${esc(desc)}.<br><span class="muted">eWay transaction ${t.id}. A receipt goes to ${esc(v.contact.e)}.</span></p><div class="row" style="justify-content:flex-end"><button class="btn" data-act="close">Done</button></div>`);
+      onPaid&&onPaid(t);render();},900);
+  };
+}
+
+/* ---------- email templates ---------- */
+function emailHTML(k,v){
+  const c=comp(v),m=new Date().toLocaleString('en-AU',{month:'long'}),btn=(t)=>`<a href="#" style="display:inline-block;background:#123B4A;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:10px;align-self:flex-start">${t}</a>`;
+  const auto=DB.autos.find(a=>a.k===k);
+  const subj=(auto?auto.subj:'').replace('{{venue}}',v.name).replace('{{percent}}',c.pct).replace('{{month}}',m).replace('{{uses}}',v.stats.uses).replace('{{expires}}',fmt(v.expires)).replace('{{boost}}','Featured boost');
+  const bodies={
+    welcome:`<p style="margin:0">Hi ${esc(v.contact.n.split(' ')[0])},</p><p style="margin:0">You're in. Backpackers and working holiday makers travelling the East Coast will see ${esc(v.name)} in the Traveller Perks app as soon as your profile is approved.</p><p style="margin:0">Venues with a logo, three photos and real hours get far more taps. It takes about ten minutes.</p>${btn('Finish my profile')}`,
+    profile:`<p style="margin:0">Hi ${esc(v.contact.n.split(' ')[0])},</p><p style="margin:0">Your profile for <b>${esc(v.name)}</b> is <b>${c.pct}% complete</b>. Travellers skip venues with no photos or hours.</p><div style="display:flex;gap:16px;align-items:center">${ring(c.pct,84)}<div>${c.missing.length?c.missing.map(i=>`<div>☐ ${esc(i.l)}</div>`).join(''):'<div>Nothing left. Nice work.</div>'}</div></div>${btn('Finish my profile')}`,
+    monthly:`<p style="margin:0">Hi ${esc(v.contact.n.split(' ')[0])},</p><p style="margin:0">It's a new month. Here's what travellers see for ${esc(v.name)} right now:</p><div style="border:1px solid #E3E8E9;border-radius:12px;padding:12px">${v.offers.map(o=>`<div><b>${esc(o.t)}</b>${o.paused?' (paused)':''}<br><span style="color:#737778;font-size:13px">${esc(o.terms)}</span></div>`).join('<hr style="border:0;border-top:1px solid #E3E8E9">')}</div><p style="margin:0">Still right? If you've got a quiet night coming up, add a flash deal and we'll show it to travellers in ${esc(TOWN(v.town))} straight away.</p>${btn('Update my deals')}`,
+    stats:`<p style="margin:0">Last month at ${esc(v.name)}:</p><div style="display:flex;gap:10px">${[['Views',v.stats.views],['Saves',v.stats.saves],['Perks used',v.stats.uses]].map(([a,b])=>`<div style="flex:1;border:1px solid #E3E8E9;border-radius:12px;padding:10px"><div style="font:900 22px Work Sans">${b}</div><div style="font-size:12px;color:#737778">${a}</div></div>`).join('')}</div><p style="margin:0">${inTown(v.town)+arriving(v.town)} travellers are in or heading to ${esc(TOWN(v.town))} this week.</p>${btn('See full stats')}`,
+    renewal:`<p style="margin:0">Your Traveller Perks listing for ${esc(v.name)} ends on <b>${fmt(v.expires)}</b>.</p><p style="margin:0">${v.card&&v.autoRenew?`It renews automatically on your ${v.card.brand} ending ${v.card.last4} for ${money(DB.settings.listing)}. Nothing to do.`:`Renew now so you stay in the app. ${money(DB.settings.listing)} for 12 months.`}</p>${btn(v.card&&v.autoRenew?'Manage billing':'Renew my listing')}`,
+    expired:`<p style="margin:0">${esc(v.name)} is no longer showing to travellers. Renew to switch it straight back on. Your photos and offers are all saved.</p>${btn('Renew for '+money(DB.settings.listing))}`,
+    card:`<p style="margin:0">We couldn't charge your card for ${esc(v.name)}. Update it in a minute so your listing doesn't lapse.</p>${btn('Update my card')}`,
+    boost:`<p style="margin:0">Your Featured boost for ${esc(v.name)} is booked. You'll show at the top of the Perks home screen and the ${esc(TOWN(v.town))} page.</p>${btn('See my boosts')}`};
+  return`<div class="mail"><div class="meta">From: Traveller Perks &lt;${esc(DB.settings.fromEmail)}&gt; · To: ${esc(v.contact.e)}<br><b>Subject: ${esc(subj)}</b></div><div class="mh"><img src="${LOGO_WHITE}" alt="ULTIMATE"><b style="font:900 20px Work Sans;letter-spacing:.02em">TRAVELLER PERKS</b></div><div class="mb">${bodies[k]||''}</div><div class="mf">Traveller Perks by Ultimate · perks.ultimate.travel · <a href="#">Email settings</a></div></div>`;
+}
+
+/* ---------- VENUE PAGES ---------- */
+const VNAV=[['dash','Dashboard'],['profile','Venue profile'],['offers','Offers + flash deals'],['boost','Boost: featured + push'],['bookings','Bookings in the app'],['redeem','Check a voucher'],['locations','Locations'],['billing','Billing'],['emails','Email settings']];
+function vPage(){const v=cv();if(!v)return'<div class="card">Venue not found.</div>';const c=comp(v);
+  switch(S.page){
+  case 'dash':{const live=v.status==='live';return`
+    ${c.pct<100?`<div class="card" style="border-color:#BFE9E5"><div class="ring">${ring(c.pct)}<div style="display:flex;flex-direction:column;gap:6px"><h2>Your profile is ${c.pct}% complete</h2><div class="muted">Finish ${c.missing.length===1?'this last step':'these '+c.missing.length+' steps'} and you'll show up properly in the app. Complete profiles get more taps.</div><div class="row">${c.missing.slice(0,4).map(i=>`<button class="btn sm ghost" data-act="go" data-p="${i.p}">${esc(i.l)}</button>`).join('')}</div></div></div></div>`:`<div class="note">Your profile is 100% complete. Nice.</div>`}
+    ${v.status==='pending'?'<div class="warnbox">Your venue is waiting for approval by the Perks team. We usually check within 1 business day.</div>':''}
+    ${v.status==='expired'?`<div class="warnbox row" style="justify-content:space-between"><span><b>Your listing has ended.</b> Travellers can't see ${esc(v.name)} right now.</span><button class="btn sm" data-act="renew">Renew for ${money(DB.settings.listing)}</button></div>`:''}
+    <div class="grid g6">
+      <div class="kpi"><span>Views · 30 days</span><b>${v.stats.views.toLocaleString()}</b></div>
+      <div class="kpi"><span>Saves</span><b>${v.stats.saves}</b></div>
+      <div class="kpi"><span>Perks used</span><b>${v.stats.uses}</b></div>
+      <div class="kpi"><span>Travellers in town now</span><b>${inTown(v.town)}</b><i>+${arriving(v.town)} arriving this week</i></div></div>
+    <div class="grid g2">
+      <div class="card"><div class="hd"><h2>Your listing</h2>${chip(v.status)}</div>
+        <div>Shows in the app until <b>${fmt(v.expires)}</b> ${expChip(v.expires)}</div>
+        <div class="muted">${v.card?`${v.autoRenew?'Renews automatically':'Auto-renew is off'} · ${v.card.brand} •• ${v.card.last4}`:'No card saved. Add one so your listing doesn\'t drop off.'}</div>
+        <div class="row"><button class="btn" data-act="renew">Renew now</button><button class="btn ghost" data-act="go" data-p="billing">Billing</button></div></div>
+      <div class="card"><div class="hd"><h2>Get more travellers in</h2></div>
+        <div class="row"><button class="btn mint" data-act="go" data-p="boost">Feature my venue</button><button class="btn ghost" data-act="flash">Add a flash deal</button><button class="btn ghost" data-act="go" data-p="boost">Send a push</button></div>
+        <div class="muted">${v.featuredUntil>NOW?`Featured until ${fmt(v.featuredUntil)}.`:'Not featured right now. Featured venues sit at the top of the Perks home screen.'}</div>${v.brandId?'':`<button class="btn sm ghost" data-act="go" data-p="locations" style="align-self:flex-start">I'm in multiple locations</button>`}</div></div>
+    <div class="card"><div class="hd"><h2>Perks used per month</h2></div>${monthBars(v.stats.months)}</div>`}
+  case 'profile':return`
+    <div class="card"><div class="ring">${ring(c.pct,72)}<div><h2>${c.pct}% complete</h2><div class="muted">${c.missing.length?'Still to do: '+c.missing.map(i=>i.l.toLowerCase()).join(', ')+'.':'All done.'}</div></div></div></div>
+    <div class="grid g2">
+    <div class="card"><h2>Logo and photos</h2>
+      <div class="row" style="gap:14px;align-items:flex-start"><div style="width:96px;height:96px;border-radius:16px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff;flex:none">${v.logo?`<img src="${esc(v.logo)}" alt="${esc(v.name)} logo" style="max-width:100%;max-height:100%" onerror="this.replaceWith(document.createTextNode('${esc(initials(v.name))}'))">`:'<span class="muted">No logo</span>'}</div>
+      <div style="display:flex;flex-direction:column;gap:6px"><label class="btn sm ghost">Upload logo<input type="file" accept="image/*" data-up="logo" hidden></label>${v.logo?'<button class="btn sm danger" data-act="rmlogo">Remove</button>':''}<span class="muted">Square PNG or JPG, at least 400px. Required to go live.</span></div></div>
+      <div class="thumbs">${v.photos.map((p,i)=>`<div class="t"><img src="${esc(p)}" alt="Photo ${i+1}" onerror="this.style.display='none'"><button aria-label="Remove photo ${i+1}" data-act="rmphoto" data-i="${i}">×</button></div>`).join('')}</div>
+      <label class="drop">+ Add photos (${v.photos.length}/8). At least 3, landscape works best.<input type="file" accept="image/*" multiple data-up="photos" hidden></label>
+      <div class="muted">Only upload photos you own or have permission to use.</div></div>
+    <div class="card"><h2>About your venue</h2>
+      <label class="f">Venue name<input class="i" data-f="name" value="${esc(v.name)}"></label>
+      <div class="row" style="flex-wrap:nowrap"><label class="f" style="flex:1">Category<select class="i" data-f="cat">${['Bar','Restaurant','Cafe','Activity','Shop','Free'].map(x=>`<option ${x===v.cat?'selected':''}>${x}</option>`).join('')}</select></label>
+      <label class="f" style="flex:1">Town<select class="i" data-f="town">${TOWNS.map(t=>`<option value="${t}" ${t===v.town?'selected':''}>${esc(TOWN(t))}</option>`).join('')}</select></label></div>
+      <label class="f">Description<textarea class="i" data-f="desc" placeholder="What's it like, what should travellers order, when is it best?">${esc(v.desc)}</textarea></label>
+      <label class="f">Address<input class="i" data-f="addr" value="${esc(v.addr)}"></label>
+      <div class="row" style="flex-wrap:nowrap"><label class="f" style="flex:1">Phone<input class="i" data-f="phone" value="${esc(v.phone)}"></label><label class="f" style="flex:1">Instagram<input class="i" data-f="insta" value="${esc(v.insta)}" placeholder="@yourvenue"></label></div>
+      <label class="f">Website<input class="i" data-f="web" value="${esc(v.web)}" placeholder="https://"></label>
+      <label class="f">Booking link (optional)<input class="i" data-f="book" value="${esc(v.book)}" placeholder="https://"></label></div>
+    <div class="card"><div class="hd"><h2>Opening hours</h2>${v.hoursReal?'<span class="chip live">Confirmed</span>':'<span class="chip pending">Not confirmed</span>'}</div>
+      <div class="muted">The app shows "Open now" from these, in your local time.</div>
+      ${[1,2,3,4,5,6,0].map(d=>{const h=v.hours[d];return`<div class="row" style="flex-wrap:nowrap"><b style="width:44px">${DOW[d]}</b><input class="i" type="time" data-h="${d}" data-w="0" value="${h?h[0]:''}" ${h?'':'disabled'} style="max-width:130px"><span>to</span><input class="i" type="time" data-h="${d}" data-w="1" value="${h?h[1]:''}" ${h?'':'disabled'} style="max-width:130px"><label class="row" style="gap:6px;font-size:13px"><input type="checkbox" data-closed="${d}" ${h?'':'checked'}> Closed</label></div>`}).join('')}
+      <button class="btn sm" data-act="confirmhours" style="align-self:flex-start">These hours are right</button></div>
+    <div class="card"><h2>Contact for Perks emails</h2>
+      <label class="f">Name<input class="i" data-c="n" value="${esc(v.contact.n)}"></label>
+      <label class="f">Email<input class="i" data-c="e" type="email" value="${esc(v.contact.e)}"></label>
+      <div class="muted">Reminders, receipts and monthly stats go here.</div></div></div>`;
+  case 'offers':return`
+    <div class="card"><div class="hd"><div><h2>Your offers</h2><div class="muted">${standingOffers(cv())} of ${offerCap(cv())} offers used${standingOffers(cv())>=offerCap(cv())?` · <a href="#" data-act="offerpack">Add 3 more for ${money(DB.settings.offerPack)}/yr</a>`:''}</div></div><div class="row"><button class="btn ghost" data-act="flash">Flash deal</button><button class="btn" data-act="offer">+ Add offer</button></div></div>
+    <div class="muted">Each offer gets its own Use button in the app. Set days and times if it only runs some of the week.</div>
+    ${v.offers.map(o=>`<div style="border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap">
+      <div style="min-width:0;flex:1"><div class="row"><b>${esc(o.t)}</b>${o.flashUntil>NOW?`<span class="chip mint">Flash until ${fmtT(o.flashUntil)}</span>`:''}${o.paused?'<span class="chip pending">Paused</span>':'<span class="chip live">Live</span>'}</div>
+      <div class="muted">${esc(o.terms||'No terms yet')}${o.when?` · ${o.when[0].map(d=>DOW[d]).join(', ')} ${o.when[1]}–${o.when[2]}`:' · Any time we\'re open'}</div></div>
+      <div class="row"><button class="btn sm ghost" data-act="offer" data-id="${o.id}">Edit</button><button class="btn sm ghost" data-act="pause" data-id="${o.id}">${o.paused?'Resume':'Pause'}</button><button class="btn sm danger" data-act="deloffer" data-id="${o.id}">Delete</button></div></div>`).join('')||'<div class="muted">No offers yet.</div>'}</div>`;
+  case 'boost':{const mine=DB.pushes.filter(p=>p.vid===v.id);const st=DB.settings;return`
+    <div class="grid g2">
+    <div class="card"><div class="hd"><h2>Featured</h2>${v.featuredUntil>NOW?`<span class="chip mint">Until ${fmt(v.featuredUntil)}</span>`:''}</div>
+      <div>Sit at the top of the Perks home screen and the ${esc(TOWN(v.town))} page. ${money(st.featuredWeek)} per week.</div>
+      <label class="f">How long<select class="i" id="fw">${[1,2,4,8].map(w=>`<option value="${w}">${w} week${w>1?'s':''} · ${money(st.featuredWeek*w)}</option>`).join('')}</select></label>
+      <button class="btn mint" data-act="buyfeat" style="align-self:flex-start">Feature my venue</button></div>
+    <div class="card"><h2>Push notification</h2>
+      <div>Send one notification to travellers' phones. ${money(st.push)} per send. The Perks team checks every push before it goes out.</div>
+      <label class="f">Headline (40 max)<input class="i" id="pt" maxlength="40" placeholder="2-for-1 cocktails tonight"></label>
+      <label class="f">Message (120 max)<textarea class="i" id="pb" maxlength="120" placeholder="Show the app at the bar. Until 9pm."></textarea></label>
+      <label class="f">Who gets it<select class="i" id="pa"><option value="in:${v.town}">Travellers in ${esc(TOWN(v.town))} now (${inTown(v.town)})</option><option value="arr:${v.town}">Arriving in ${esc(TOWN(v.town))} in the next 7 days (${arriving(v.town)})</option><option value="saved:${v.id}">Travellers who saved ${esc(v.name)}</option></select></label>
+      <label class="f">When<input class="i" type="datetime-local" id="pw"></label>
+      <button class="btn mint" data-act="buypush" style="align-self:flex-start">Pay ${money(st.push)} and send for approval</button></div></div>
+    <div class="card"><h2>Your pushes</h2>${mine.length?`<div class="tw"><table class="tbl"><tr><th>Headline</th><th>When</th><th>Status</th><th>Reached</th><th>Opened</th></tr>${mine.map(p=>`<tr><td>${esc(p.title)}</td><td>${fmtT(p.when)}</td><td>${chip(p.status)}</td><td>${p.reach||'—'}</td><td>${p.opens||'—'}</td></tr>`).join('')}</table></div>`:'<div class="muted">None yet.</div>'}</div>`}
+  case 'bookings':{const b=v.booking,s=v.bstats,conv=s.opens?s.bookings/s.opens*100:0;return`
+    <div class="note">Tours and activities can take bookings straight from the app. Travellers tap <b>Book now</b> on your perk and we track every tap, every booking page opened and every confirmed booking, so you can see exactly what Perks brings in.</div>
+    <div class="grid g6"><div class="kpi"><span>Book now taps</span><b>${s.taps}</b></div><div class="kpi"><span>Booking page opened</span><b>${s.opens}</b></div><div class="kpi"><span>Confirmed bookings</span><b>${s.bookings}</b><i>${conv.toFixed(1)}% of opens</i></div><div class="kpi"><span>Booking value</span><b>${money(s.value)}</b></div></div>
+    <div class="grid g2">
+    <div class="card"><div class="hd"><h2>Option 1: import your booking widget</h2>${b.mode==='widget'?'<span class="chip live">In use</span>':''}</div>
+      <div>Paste the embed code from your booking system. It opens inside the app, so travellers never leave, and we see when the booking is confirmed.</div>
+      <label class="f">Widget embed code<textarea class="i" id="bcode" placeholder="Paste from Rezdy, FareHarbor, Bokun, Checkfront, TrekkSoft, Peek or Xola" style="font-family:monospace;font-size:12px">${esc(b.mode==='widget'?b.code:'')}</textarea></label>
+      ${b.mode==='widget'&&b.provider?`<div class="muted">Detected: <b>${esc(b.provider)}</b></div>`:''}
+      <button class="btn" data-act="savewidget" style="align-self:flex-start">Use this widget</button>
+      <div class="muted">How we see confirmed bookings: the app watches for your system's confirmation page inside the in-app browser. Rezdy and FareHarbor can also send us a booking webhook for exact values.</div></div>
+    <div class="card"><div class="hd"><h2>Option 2: send them to your website</h2>${b.mode==='link'?'<span class="chip live">In use</span>':''}</div>
+      <div>Prefer your own booking page? Add the link. We send travellers through a tracked link so every click is counted.</div>
+      <label class="f">Your booking page<input class="i" id="burl" value="${esc(b.mode==='link'?b.url:'')}" placeholder="https://yoursite.com.au/book"></label>
+      <button class="btn" data-act="savelink" style="align-self:flex-start">Use this page</button>
+      ${b.mode==='link'?`<div class="eway"><div><b>Your tracked link</b><br><code>${esc(trackLink(v))}</code></div><div class="muted">It forwards to your page with <code>?utm_source=ultimate_perks&amp;perks_ref=…</code> on the end, so it also shows up in your Google Analytics.</div></div>
+      <div><b>Count confirmed bookings</b> (pick one)</div>
+      <div class="muted">1. Add this line to your booking confirmation or thank-you page:</div>
+      <code style="display:block;background:#F4F8F8;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12px;white-space:pre-wrap">&lt;script src="https://perks.ultimate.travel/t.js" data-venue="${v.id}" data-event="booking" data-value="BOOKING_TOTAL"&gt;&lt;/script&gt;</code>
+      <div class="muted">2. Or give Perks travellers a promo code at checkout, e.g. <b>PERKS-${esc(initials(v.name))}</b>, and we match the bookings from your monthly report.</div>`:''}</div></div>
+    ${b.mode?`<button class="btn danger" data-act="clearbook" style="align-self:flex-start">Turn off bookings in the app</button>`:''}`}
+  case 'redeem':return`<div class="card" style="max-width:520px"><h2>Check a voucher</h2><div class="muted">The traveller's code changes every 15 seconds. Type it in, or scan the QR on their screen.</div><label class="f">Code on their screen<input class="i" id="vc" maxlength="6" placeholder="e.g. 4KX7Q2" style="font:900 22px Work Sans;letter-spacing:.2em;text-transform:uppercase"></label><div class="row"><button class="btn" data-act="redeem">Check code</button><button class="btn ghost" data-act="scan">Scan QR</button></div></div>`;
+  case 'locations':{const b=B(v.brandId);const st=DB.settings;
+    if(!b) return`<div class="card" style="max-width:720px"><h2>Are you in more than one location?</h2>
+      <div>Chains and groups can list every location under one brand. Travellers get a brand page showing all your locations, and each location gets its own perk page, map pin and opening hours.</div>
+      <div class="grid g3"><div class="kpi"><span>This location</span><b>${money(st.listing)}</b><i>per year, as now</i></div><div class="kpi"><span>Each extra location</span><b>${money(st.extraLocation)}</b><i>per year</i></div><div class="kpi"><span>Brand page</span><b>Free</b><i>with 2 or more locations</i></div></div>
+      <button class="btn mint" data-act="mkbrand" style="align-self:flex-start">I'm in multiple locations</button></div>`;
+    const locs=brandLocs(b.id);return`
+    <div class="card"><div class="hd"><div><h2>${esc(b.name)}</h2><div class="muted">${locs.length} location${locs.length>1?'s':''} · Brand page: perks.ultimate.travel/brand/${esc(b.id)}</div></div><div class="row"><button class="btn ghost" data-act="editbrand">Edit brand</button><button class="btn mint" data-act="addloc">+ Add a location · ${money(st.extraLocation)}/yr</button></div></div>
+      <div class="muted">Each location has its own offers, hours and voucher checks. Use "Copy to all" on an offer to roll a deal out everywhere.</div></div>
+    <div class="tw"><table class="tbl"><tr><th>Location</th><th>Town</th><th>Status</th><th>Profile</th><th>Listing ends</th><th>Used · mth</th><th></th></tr>
+    ${locs.map(x=>`<tr><td><div class="row" style="flex-wrap:nowrap">${av(x)}<b>${esc(x.name)}</b>${x.id===v.id?' <span class="chip mint">You are here</span>':''}</div></td><td>${esc(TOWN(x.town))}</td><td>${chip(x.status)}</td><td>${pbar(comp(x).pct)}</td><td>${expChip(x.expires)}</td><td>${x.stats.uses}</td><td>${x.id===v.id?'':`<button class="btn sm ghost" data-act="switchloc" data-id="${x.id}">Manage</button>`}</td></tr>`).join('')}</table></div>
+    <div class="card"><h2>Roll out an offer to every location</h2><div class="muted">Pick one of this location's offers and copy it to the others. Each location can still change it later.</div>
+      ${v.offers.length?v.offers.map(o=>`<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding-top:10px"><span>${esc(o.t)}</span><button class="btn sm" data-act="copyall" data-id="${o.id}">Copy to all ${locs.length-1} other location${locs.length-1===1?'':'s'}</button></div>`).join(''):'<div class="muted">No offers yet.</div>'}</div>`}
+  case 'billing':{const mine=DB.tx.filter(t=>t.vid===v.id);return`
+    <div class="grid g2">
+    <div class="card"><div class="hd"><h2>Annual listing</h2>${chip(v.status)}</div><div>${money(DB.settings.listing)} for 12 months${DB.settings.gstIncl?' incl. GST':' + GST'}. Ends ${fmt(v.expires)} ${expChip(v.expires)}</div>
+      <label class="row" style="gap:10px"><span class="toggle"><input type="checkbox" data-act2="autorenew" ${v.autoRenew?'checked':''}><span></span></span> Renew automatically</label>
+      <button class="btn" data-act="renew" style="align-self:flex-start">Renew now</button></div>
+    <div class="card"><h2>Card on file</h2>${v.card?`<div><b>${v.card.brand} •• ${v.card.last4}</b> · expires ${v.card.exp}</div><div class="muted">Stored by eWay. We only hold a token.</div>`:'<div class="warnbox">No card saved.</div>'}<button class="btn ghost" data-act="updcard" style="align-self:flex-start">${v.card?'Update card':'Add card'}</button></div></div>
+    <div class="card"><h2>Invoices and receipts</h2>${mine.length?`<div class="tw"><table class="tbl"><tr><th>Date</th><th>Item</th><th>Amount</th><th>Card</th><th>Status</th><th></th></tr>${mine.map(t=>`<tr><td>${fmt(t.date)}</td><td>${esc(t.type)}</td><td>${money(t.amount)}</td><td>${esc(t.method)}</td><td>${chip(t.status)}</td><td><button class="btn sm ghost" data-act="receipt" data-id="${t.id}">Receipt</button></td></tr>`).join('')}</table></div>`:'<div class="muted">No payments yet.</div>'}</div>`}
+  case 'emails':return`<div class="card"><h2>Emails we send you</h2><div class="muted">Sent to ${esc(v.contact.e)}. Billing and renewal emails always go out.</div>
+    ${[['profile','Profile reminders','Until your profile is 100% complete'],['monthly','Monthly: update your deals','1st of each month'],['stats','Monthly stats','2nd of each month']].map(([k,n,w])=>`<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding-top:10px"><label class="row" style="gap:10px"><span class="toggle"><input type="checkbox" data-em="${k}" ${v.emails[k]?'checked':''}><span></span></span><span><b>${n}</b><br><span class="muted">${w}</span></span></label><button class="btn sm ghost" data-act="preview" data-k="${k}">Preview</button></div>`).join('')}
+    ${[['renewal','Renewal reminders'],['card','Card problems'],['boost','Boost receipts']].map(([k,n])=>`<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding-top:10px"><span><b>${n}</b><br><span class="muted">Always on</span></span><button class="btn sm ghost" data-act="preview" data-k="${k}">Preview</button></div>`).join('')}</div>`;
+  }}
+function monthBars(arr){const mx=Math.max(1,...arr),now=new Date();return`<div class="mbars" style="margin:18px 0 20px">${arr.map((n,i)=>{const d=new Date(now.getFullYear(),now.getMonth()-5+i,1);return`<div style="height:${n/mx*100}%"><em>${n}</em><span>${d.toLocaleString('en-AU',{month:'short'})}</span></div>`}).join('')}</div>`}
+
+/* ---------- ADMIN PAGES ---------- */
+const ANAV=()=>{const pend=DB.venues.filter(v=>v.status==='pending').length+DB.pushes.filter(p=>p.status==='Awaiting approval').length;return[['dash','Overview',pend],['venues','Venues'],['prospects','Prospects',DB.venues.filter(v=>v.status==='prospect').length],['members','Members'],['push','Push notifications'],['featured','Featured slots'],['payments','Payments (eWay)'],['reports','Reports + downloads'],['emails','Emails + automations'],['content',"What's On + reviews"],['settings','Settings']]};
+function aPage(){const st=DB.settings;
+  switch(S.page){
+  case 'dash':{const mth=DB.tx.filter(t=>t.status==='Approved'&&new Date(t.date).getMonth()===new Date().getMonth()&&new Date(t.date).getFullYear()===new Date().getFullYear()).reduce((a,t)=>a+t.amount,0);
+    const exp30=DB.venues.filter(v=>!['draft','prospect'].includes(v.status)&&daysTo(v.expires)<=30).sort((a,b)=>a.expires-b.expires);
+    const inc=DB.venues.filter(v=>v.status!=='prospect'&&comp(v).pct<100);
+    const pv=DB.venues.filter(v=>v.status==='pending'),pp=DB.pushes.filter(p=>p.status==='Awaiting approval');
+    return`<div class="grid g6">
+      <div class="kpi"><span>Revenue this month</span><b>${money(mth)}</b></div>
+      <div class="kpi"><span>Live venues</span><b>${DB.venues.filter(v=>v.status==='live').length}</b><i>of ${DB.venues.length}</i></div>
+      <div class="kpi"><span>Expiring ≤ 30 days</span><b>${exp30.length}</b></div>
+      <div class="kpi"><span>Members</span><b>${DB.members.length}</b><i>${DB.members.filter(m=>NOW-m.lastSeen<DAY).length} active today</i></div>
+      <div class="kpi"><span>Perks used · month</span><b>${DB.venues.reduce((a,v)=>a+v.stats.uses,0)}</b></div>
+      <div class="kpi"><span>Incomplete profiles</span><b>${inc.length}</b></div>
+      <div class="kpi"><span>Prospects to sign</span><b>${DB.venues.filter(v=>v.status==='prospect').length}</b><i>${DB.venues.filter(v=>v.status==='prospect'&&v.priority).length} priority</i></div></div>
+    <div class="card"><div class="hd"><h2>Chase up: listings ending in 30 days</h2><button class="btn sm ghost" data-act="go" data-p="reports" data-t="exp">Full report</button></div>
+      ${exp30.length?`<div class="tw"><table class="tbl"><tr><th>Venue</th><th>Town</th><th>Ends</th><th>Renewal</th><th></th></tr>${exp30.map(v=>`<tr><td><div class="row" style="flex-wrap:nowrap">${av(v)}<b>${esc(v.name)}</b></div></td><td>${esc(TOWN(v.town))}</td><td>${expChip(v.expires)}</td><td>${v.card&&v.autoRenew?'<span class="chip live">Auto-renews</span>':'<span class="chip pending">Manual</span>'}</td><td><div class="row" style="flex-wrap:nowrap;justify-content:flex-end"><button class="btn sm ghost" data-act="chase" data-id="${v.id}">Email</button>${v.card?`<button class="btn sm" data-act="charge" data-id="${v.id}" data-item="listing">Charge</button>`:''}</div></td></tr>`).join('')}</table></div>`:'<div class="muted">Nothing ending soon.</div>'}</div>
+    <div class="grid g2">
+    <div class="card"><div class="hd"><h2>Needs approval</h2></div>
+      ${pv.map(v=>`<div class="row" style="justify-content:space-between">${av(v)}<span style="flex:1"><b>${esc(v.name)}</b><br><span class="muted">New venue · ${esc(TOWN(v.town))} · ${comp(v).pct}% complete</span></span><button class="btn sm ghost" data-act="viewas" data-id="${v.id}">Check</button><button class="btn sm" data-act="approve" data-id="${v.id}">Approve</button></div>`).join('')}
+      ${pp.map(p=>`<div class="row" style="justify-content:space-between"><span style="flex:1"><b>Push: ${esc(p.title)}</b><br><span class="muted">${esc(V(p.vid)?.name||'House')} · ${fmtT(p.when)} · ${p.paid}</span></span><button class="btn sm" data-act="approvepush" data-id="${p.id}">Approve</button><button class="btn sm danger" data-act="rejectpush" data-id="${p.id}">Reject</button></div>`).join('')}
+      ${pv.length+pp.length?'':'<div class="muted">All clear.</div>'}</div>
+    <div class="card"><div class="hd"><h2>Incomplete profiles</h2><button class="btn sm" data-act="remindall">Send reminder to all ${inc.length}</button></div>
+      ${inc.sort((a,b)=>comp(a).pct-comp(b).pct).slice(0,6).map(v=>`<div class="row" style="flex-wrap:nowrap">${av(v)}<span style="flex:1;min-width:0"><b>${esc(v.name)}</b>${pbar(comp(v).pct)}</span><b>${comp(v).pct}%</b><button class="btn sm ghost" data-act="viewas" data-id="${v.id}">View as</button></div>`).join('')}</div>
+    <div class="card"><h2>Recent activity</h2>${DB.log.slice(0,8).map(l=>`<div class="row" style="justify-content:space-between"><span>${esc(l.a)}</span><span class="muted">${fmtT(l.t)}</span></div>`).join('')}</div></div>`}
+  case 'venues':{let list=DB.venues.filter(v=>(!S.q||v.name.toLowerCase().includes(S.q.toLowerCase()))&&(!S.ftown||v.town===S.ftown)&&(!S.fstatus||v.status===S.fstatus));return`
+    <div class="row" style="justify-content:space-between"><div class="row"><input class="i" placeholder="Search venues" data-q value="${esc(S.q)}" style="width:220px"><select class="i" data-ft style="width:170px"><option value="">All towns</option>${TOWNS.map(t=>`<option value="${t}" ${S.ftown===t?'selected':''}>${esc(TOWN(t))}</option>`).join('')}</select><select class="i" data-fs style="width:150px"><option value="">Any status</option>${['live','pending','prospect','draft','expired','suspended'].map(s=>`<option ${S.fstatus===s?'selected':''}>${s}</option>`).join('')}</select></div>
+    <div class="row"><button class="btn ghost" data-act="csvvenues">Download CSV</button><button class="btn" data-act="addvenue">+ Add venue</button></div></div>
+    <div class="tw"><table class="tbl"><tr><th>Venue</th><th>Town</th><th>Status</th><th>Profile</th><th>Listing ends</th><th>Featured</th><th>Card</th><th>Used · mth</th><th></th></tr>
+    ${list.map(v=>{const p=comp(v).pct;return`<tr><td><div class="row" style="flex-wrap:nowrap">${av(v)}<span><b>${esc(v.name)}</b>${v.brandId?`<br><span class="chip mint">${esc(B(v.brandId)?.name||'')}</span>`:''}</span></div></td><td>${esc(TOWN(v.town))}</td><td>${chip(v.status)}</td><td><div class="row" style="flex-wrap:nowrap">${pbar(p)}<span>${p}%</span></div></td><td>${expChip(v.expires)}</td><td>${v.featuredUntil>NOW?`<span class="chip mint">${fmt(v.featuredUntil)}</span>`:'—'}</td><td>${v.card?`${v.card.brand} •• ${v.card.last4}`:'<span class="chip bad">None</span>'}</td><td>${v.stats.uses}</td>
+      <td><div class="row" style="flex-wrap:nowrap"><button class="btn sm" data-act="viewas" data-id="${v.id}">View as</button><button class="btn sm ghost" data-act="charge" data-id="${v.id}">Charge</button><button class="btn sm ghost" data-act="vedit" data-id="${v.id}">Admin</button></div></td></tr>`}).join('')}</table></div>
+    <div class="muted">${list.length} venues. Sample data built from your current perks.</div>
+    <div class="card"><div class="hd"><h2>Brands and chains</h2><button class="btn sm ghost" data-act="adminbrand">+ New brand</button></div>
+      ${(DB.brands||[]).map(b=>{const l=brandLocs(b.id);return`<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding-top:10px"><span><b>${esc(b.name)}</b> · ${l.length} location${l.length===1?'':'s'}: ${l.map(x=>esc(x.name+' ('+TOWN(x.town)+')')).join(', ')}</span><button class="btn sm ghost" data-act="viewas" data-id="${l[0]?.id}">View as brand</button></div>`}).join('')||'<div class="muted">No brands yet.</div>'}
+      <div class="muted">Link a venue to a brand from its Admin button. Extra locations bill at ${money(DB.settings.extraLocation)} a year each.</div></div>`}
+  case 'prospects':{const all=DB.venues.filter(v=>v.status==='prospect');let list=all.filter(v=>(!S.q||v.name.toLowerCase().includes(S.q.toLowerCase()))&&(!S.ftown||v.town===S.ftown));
+    const byTown=TOWNS.map(k=>[k,all.filter(v=>v.town===k).length]).filter(x=>x[1]);
+    return`<div class="note">Your target list, loaded and ready. Each one has a placeholder offer ("Save 10%") and is <b>not visible in the app</b> until it signs up, pays and you approve it. Starred venues are priorities. Addresses come from OpenStreetMap, so check them before going live.</div>
+    <div class="grid g6"><div class="kpi"><span>Prospects</span><b>${all.length}</b></div><div class="kpi"><span>Priority</span><b>${all.filter(v=>v.priority).length}</b></div><div class="kpi"><span>Need a check</span><b>${all.filter(v=>v.needsCheck).length}</b></div><div class="kpi"><span>Chain locations</span><b>${all.filter(v=>v.brandId).length}</b></div></div>
+    <div class="row" style="justify-content:space-between"><div class="row"><input class="i" placeholder="Search prospects" data-q value="${esc(S.q)}" style="width:220px"><select class="i" data-ft style="width:200px"><option value="">All towns</option>${byTown.map(([k,n])=>`<option value="${k}" ${S.ftown===k?'selected':''}>${esc(TOWN(k))} (${n})</option>`).join('')}</select></div>
+    <div class="row"><label class="btn ghost">Import CSV<input type="file" accept=".csv,text/csv" data-importcsv hidden></label><button class="btn ghost" data-act="csvprospects">Download CSV</button></div></div>
+    <div class="tw"><table class="tbl"><tr><th>Venue</th><th>Town</th><th>Type</th><th>Suggested deal</th><th>Address</th><th>Brand</th><th></th></tr>
+    ${list.map(v=>`<tr><td><b>${v.priority?'<span title="Priority" style="color:#E3A23B">&#9733;</span> ':''}${esc(v.name)}</b>${v.needsCheck?`<br><span class="chip pending">${esc(v.needsCheck)}</span>`:''}</td><td>${esc(TOWN(v.town))}</td><td>${esc(v.category||v.cat)}</td><td>${esc(v.suggested||'')}<br><span class="muted">In app: ${esc(v.offers[0]?.t||'')}</span></td><td style="max-width:220px">${v.addr?esc(v.addr):'<span class="chip bad">Not found</span>'}${v.web?`<br><a href="${esc(v.web)}" target="_blank" rel="noopener">${esc(v.web.replace(/^https?:\/\/(www\.)?/,'').split('/')[0])}</a>`:''}</td><td>${v.brandId?`<span class="chip mint">${esc(B(v.brandId)?.name||'')}</span>`:''}</td>
+      <td><div class="row" style="flex-wrap:nowrap"><button class="btn sm" data-act="invite" data-id="${v.id}">Invite</button><button class="btn sm ghost" data-act="vedit" data-id="${v.id}">Edit</button></div></td></tr>`).join('')}</table></div>
+    <div class="card"><h2>National brands to approach centrally</h2><div class="muted">One deal with head office covers every location. Once agreed, add their stores as locations under the brand.</div>
+      ${(DB.brands||[]).map(b=>{const l=brandLocs(b.id);return`<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding-top:10px"><span><b>${b.priority?'&#9733; ':''}${esc(b.name)}</b> · ${esc(b.concept||'')}<br><span class="muted">${l.length?l.length+' location'+(l.length===1?'':'s')+' on your list: '+[...new Set(l.map(x=>TOWN(x.town)))].join(', '):'No locations on your list yet'}</span></span><span class="chip">${esc(b.category||'')}</span></div>`}).join('')}</div>`}
+  case 'members':{let list=DB.members.filter(m=>(!S.q||(m.n+m.e+m.ref).toLowerCase().includes(S.q.toLowerCase()))&&(!S.ftown||m.town===S.ftown));return`
+    <div class="note">Sample members for testing. Travellers sign in with Apple, Google, Facebook or their booking number.</div>
+    <div class="row" style="justify-content:space-between"><div class="row"><input class="i" placeholder="Search name, email or booking" data-q value="${esc(S.q)}" style="width:260px"><select class="i" data-ft style="width:170px"><option value="">Anywhere</option>${TOWNS.map(t=>`<option value="${t}" ${S.ftown===t?'selected':''}>In ${esc(TOWN(t))}</option>`).join('')}</select></div><button class="btn ghost" data-act="csvmembers">Download CSV</button></div>
+    <div class="tw"><table class="tbl"><tr><th>Member</th><th>Booking</th><th>Tour</th><th>Now in</th><th>Signed in with</th><th>Perks used</th><th>Last seen</th><th>Status</th><th></th></tr>
+    ${list.map(m=>`<tr><td><b>${esc(m.n)}</b><br><span class="muted">${esc(m.e)}</span></td><td>${m.ref}</td><td>${esc(m.tour)}</td><td>${esc(TOWN(m.town))}</td><td>${m.via}</td><td>${m.used}</td><td>${fmtT(m.lastSeen)}</td><td>${chip(m.status)}</td>
+    <td><div class="row" style="flex-wrap:nowrap"><button class="btn sm ghost" data-act="mview" data-id="${m.id}">View</button><button class="btn sm ghost" data-act="mblock" data-id="${m.id}">${m.status==='blocked'?'Unblock':'Block'}</button><button class="btn sm danger" data-act="mdel" data-id="${m.id}">Delete</button></div></td></tr>`).join('')}</table></div>`}
+  case 'push':return`<div class="grid g2">
+    <div class="card"><h2>New push notification</h2>
+      <label class="f">Headline (40 max)<input class="i" id="pt" maxlength="40" placeholder="Happy hour starts now"></label>
+      <label class="f">Message (120 max)<textarea class="i" id="pb" maxlength="120" placeholder="Half-price jugs until 7pm. Show the app."></textarea></label>
+      <label class="f">Who gets it<select class="i" id="pa"><option value="all">All members (${DB.members.filter(m=>m.status==='active').length})</option>${TOWNS.map(t=>`<option value="in:${t}">In ${esc(TOWN(t))} now (${inTown(t)})</option>`).join('')}${TOWNS.map(t=>`<option value="arr:${t}">Arriving in ${esc(TOWN(t))}, next 7 days (${arriving(t)})</option>`).join('')}</select></label>
+      <label class="f">Opens perk<select class="i" id="pv"><option value="">Perks home</option>${DB.venues.map(v=>`<option value="${v.id}">${esc(v.name)}</option>`).join('')}</select></label>
+      <label class="f">When<input class="i" type="datetime-local" id="pw"><span class="muted" style="text-transform:none;font-weight:500">Leave empty to send now. Quiet hours 10pm to 8am are blocked.</span></label>
+      <label class="f">Billing<select class="i" id="pbill"><option value="house">House push (free)</option><option value="charge">Charge the venue's saved card ${money(st.push)}</option></select></label>
+      <button class="btn mint" data-act="sendpush" style="align-self:flex-start">Send push</button></div>
+    <div class="card"><h2>Preview</h2><div class="push"><div style="font-size:12px;opacity:.6;margin-bottom:8px">Lock screen</div><div class="n"><div class="ic">UP</div><div><b id="pvt">Happy hour starts now</b><div id="pvb" style="font-size:13px;opacity:.85">Half-price jugs until 7pm. Show the app.</div></div></div></div>
+      <div class="muted">Members can mute pushes in the app. We cap it at 2 pushes per member per day.</div></div></div>
+    <div class="card"><div class="hd"><h2>History</h2><button class="btn sm ghost" data-act="csvpush">Download CSV</button></div><div class="tw"><table class="tbl"><tr><th>Headline</th><th>Audience</th><th>Venue</th><th>When</th><th>Status</th><th>Reached</th><th>Opened</th><th>Paid</th><th></th></tr>
+    ${DB.pushes.map(p=>`<tr><td><b>${esc(p.title)}</b><br><span class="muted">${esc(p.body)}</span></td><td>${audLabel(p.aud)}</td><td>${esc(V(p.vid)?.name||'House')}</td><td>${fmtT(p.when)}</td><td>${chip(p.status)}</td><td>${p.reach||'—'}</td><td>${p.opens||'—'}</td><td>${p.paid}</td><td>${p.status==='Awaiting approval'?`<button class="btn sm" data-act="approvepush" data-id="${p.id}">Approve</button>`:''}</td></tr>`).join('')}</table></div></div>`;
+  case 'featured':{const f=DB.venues.filter(v=>v.featuredUntil>NOW).sort((a,b)=>a.featuredUntil-b.featuredUntil);return`
+    <div class="card"><div class="hd"><h2>Featured now</h2><button class="btn" data-act="addfeat">+ Feature a venue</button></div><div class="muted">These show in the Featured slider on the Perks home and their town page. Up to 8 at a time works best.</div>
+    <div class="tw"><table class="tbl"><tr><th>Venue</th><th>Town</th><th>Until</th><th>Paid</th><th></th></tr>${f.map(v=>`<tr><td><div class="row">${av(v)}<b>${esc(v.name)}</b></div></td><td>${esc(TOWN(v.town))}</td><td>${expChip(v.featuredUntil)}</td><td>${DB.tx.some(t=>t.vid===v.id&&/Featured/.test(t.type))?'Venue':'House'}</td><td><div class="row"><button class="btn sm ghost" data-act="extfeat" data-id="${v.id}">+1 week</button><button class="btn sm danger" data-act="endfeat" data-id="${v.id}">End</button></div></td></tr>`).join('')}</table></div></div>`}
+  case 'payments':{const ok=DB.tx.filter(t=>t.status==='Approved');const fail=DB.tx.filter(t=>t.status==='Declined');return`
+    <div class="${st.ewayMode==='Live'?'note':'warnbox'}"><b>eWay ${st.ewayMode}.</b> ${st.ewayMode==='Live'?'Real cards are being charged.':'Test mode. No real money moves. Switch to Live in Settings once your eWay account is approved.'}</div>
+    <div class="grid g6"><div class="kpi"><span>Total taken</span><b>${money(ok.reduce((a,t)=>a+t.amount,0))}</b></div><div class="kpi"><span>Listings</span><b>${money(ok.filter(t=>/listing/i.test(t.type)).reduce((a,t)=>a+t.amount,0))}</b></div><div class="kpi"><span>Featured</span><b>${money(ok.filter(t=>/Featured/.test(t.type)).reduce((a,t)=>a+t.amount,0))}</b></div><div class="kpi"><span>Push</span><b>${money(ok.filter(t=>/Push/.test(t.type)).reduce((a,t)=>a+t.amount,0))}</b></div></div>
+    ${fail.length?`<div class="card" style="border-color:#f0c9c6"><h2>Failed payments</h2>${fail.map(t=>`<div class="row" style="justify-content:space-between"><span><b>${esc(V(t.vid)?.name)}</b> · ${esc(t.type)} · ${money(t.amount)} · ${esc(t.reason||'')}</span><div class="row"><button class="btn sm ghost" data-act="chase" data-id="${t.vid}" data-k="card">Ask for new card</button><button class="btn sm" data-act="retry" data-id="${t.id}">Retry</button></div></div>`).join('')}</div>`:''}
+    <div class="row" style="justify-content:space-between"><h2>Transactions</h2><div class="row"><button class="btn ghost" data-act="csvtx">Download CSV</button><button class="btn" data-act="charge">Charge a card</button></div></div>
+    <div class="tw"><table class="tbl"><tr><th>Date</th><th>eWay ID</th><th>Venue</th><th>Item</th><th>Amount</th><th>Card</th><th>Status</th><th></th></tr>${DB.tx.map(t=>`<tr><td>${fmt(t.date)}</td><td>${t.id}</td><td>${esc(V(t.vid)?.name||'—')}</td><td>${esc(t.type)}</td><td>${money(t.amount)}</td><td>${esc(t.method)}</td><td>${chip(t.status)}</td><td>${t.status==='Approved'&&t.amount>0?`<button class="btn sm ghost" data-act="refund" data-id="${t.id}">Refund</button>`:''}</td></tr>`).join('')}</table></div>`}
+  case 'reports':return reports();
+  case 'emails':{const v=V(S.prevVenue||'3')||DB.venues[0];const k=S.tab||'profile';const inc=DB.venues.filter(x=>x.status!=='prospect'&&comp(x).pct<100&&x.emails.profile).length;return`
+    <div class="grid g2"><div class="card"><div class="hd"><h2>Automations</h2></div>
+      ${DB.autos.map(a=>`<div style="border-top:1px solid var(--line);padding-top:10px;display:flex;gap:10px;align-items:flex-start"><span class="toggle"><input type="checkbox" data-auto="${a.k}" ${a.on?'checked':''}><span></span></span><div style="flex:1;min-width:0"><b>${esc(a.name)}</b><div class="muted">${esc(a.when)}</div></div><button class="btn sm ${k===a.k?'':'ghost'}" data-act="etab" data-k="${a.k}">Preview</button></div>`).join('')}
+      <div class="note">Profile reminders right now would go to <b>${inc}</b> venues. <button class="btn sm" data-act="remindall">Send now</button></div></div>
+    <div class="card"><div class="hd"><h2>Preview</h2><select class="i" data-pv style="width:220px">${DB.venues.map(x=>`<option value="${x.id}" ${x.id===v.id?'selected':''}>${esc(x.name)} (${comp(x).pct}%)</option>`).join('')}</select></div>
+      <label class="f">Subject<input class="i" data-subj="${k}" value="${esc(DB.autos.find(a=>a.k===k).subj)}"></label>
+      <div class="muted">Merge fields: {{venue}} {{percent}} {{month}} {{uses}} {{expires}}</div>
+      ${emailHTML(k,v)}<button class="btn ghost" data-act="testmail" style="align-self:flex-start">Send test to ${esc(DB.settings.admins[0].e)}</button></div></div>`}
+  case 'content':return`<div class="card"><div class="hd"><h2>What's On + Free things to do</h2><button class="btn ghost" data-act="pullnow">Pull now</button></div><div class="muted">The live build pulls council and tourism what's-on feeds every night at 2am. Last pull: ${esc(DB.content.pulled)}.</div>
+    <div class="tw"><table class="tbl"><tr><th>Stop</th><th>Events</th><th>Free things</th><th>Status</th></tr>${TOWNS.map(t=>`<tr><td><b>${esc(TOWN(t))}</b></td><td>${(D.towns[t].events||[]).length}</td><td>${(D.towns[t].free||[]).length}</td><td>${(D.towns[t].events||[]).length>1?'<span class="chip live">Good</span>':'<span class="chip pending">Thin, add more</span>'}</td></tr>`).join('')}</table></div></div>
+    <div class="card"><div class="hd"><h2>Reviews</h2><label class="row" style="gap:10px"><span class="toggle"><input type="checkbox" data-set="reviews" ${st.reviews?'checked':''}><span></span></span> Reviews on in the app</label></div>
+    ${DB.reviews.map((r,i)=>`<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding-top:10px"><span><b>${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</b> ${esc(r.t)}<br><span class="muted">${esc(r.who)} on ${esc(V(r.vid)?.name)}</span></span><button class="btn sm ${r.ok?'danger':''}" data-act="rev" data-i="${i}">${r.ok?'Hide':'Show'}</button></div>`).join('')}</div>`;
+  case 'settings':return`<div class="grid g2">
+    <div class="card"><h2>Prices</h2>
+      <label class="f">Annual listing<input class="i" type="number" data-set="listing" value="${st.listing}"></label>
+      <label class="f">Featured, per week<input class="i" type="number" data-set="featuredWeek" value="${st.featuredWeek}"></label>
+      <label class="f">Push notification, per send<input class="i" type="number" data-set="push" value="${st.push}"></label>
+      <label class="f">Extra location, per year<input class="i" type="number" data-set="extraLocation" value="${st.extraLocation}"></label>
+      <label class="f">Offer pack (+3 offers), per year<input class="i" type="number" data-set="offerPack" value="${st.offerPack}"></label>
+      <label class="row" style="gap:10px"><span class="toggle"><input type="checkbox" data-set="gstIncl" ${st.gstIncl?'checked':''}><span></span></span> Prices include GST</label>
+      <div class="muted">Featured and push prices here are placeholders until you set them.</div></div>
+    <div class="card"><h2>Promo codes</h2>${(st.promos||[]).map((c,i)=>`<div class="row" style="justify-content:space-between"><span><b>${esc(c.code)}</b> · ${esc(c.note)} · used ${c.uses}x</span><label class="row" style="gap:8px"><span class="toggle"><input type="checkbox" data-promo="${i}" ${c.active?'checked':''}><span></span></span>Active</label></div>`).join('')}
+      <button class="btn ghost" data-act="addpromo" style="align-self:flex-start">+ Add promo code</button><div class="muted">Venues type these on the sign-up page. A free listing still asks them to save a card so it can renew.</div></div>
+    <div class="card"><h2>eWay</h2>
+      <label class="f">Mode<select class="i" data-set="ewayMode"><option ${st.ewayMode==='Sandbox'?'selected':''}>Sandbox</option><option ${st.ewayMode==='Live'?'selected':''}>Live</option></select></label>
+      <label class="f">Rapid API key<input class="i" type="password" data-set="ewayKey" value="${esc(st.ewayKey)}" placeholder="From MYeWAY → My Account → API Key"></label>
+      <label class="f">Rapid API password<input class="i" type="password" data-set="ewayPass" value="${esc(st.ewayPass)}"></label>
+      <label class="f">Secure Fields public key<input class="i" data-set="ewayPublic" value="${esc(st.ewayPublic)}" placeholder="epk-..."></label>
+      <div class="muted">Sandbox and Live keys are different. Keys live on the server only, never in the app.</div></div>
+    <div class="card"><h2>Admins</h2>${st.admins.map(a=>`<div class="row" style="justify-content:space-between"><span><b>${esc(a.n)}</b> · ${esc(a.e)}</span><span class="chip">${a.role}</span></div>`).join('')}
+      <button class="btn ghost" data-act="addadmin" style="align-self:flex-start">+ Add admin</button>
+      <div class="muted">Owner: everything. Admin: everything except settings. Support: venues and members, no payments.</div></div>
+    <div class="card"><h2>Access</h2><div>Venues and admins only ever sign in here, at perks.ultimate.travel. WordPress admin is locked to the server owner and never used for Perks.</div><label class="f">Emails come from<input class="i" data-set="fromEmail" value="${esc(st.fromEmail)}"></label>
+      <button class="btn danger" data-act="resetdemo" style="align-self:flex-start">Reset test data</button></div></div>`;
+  }}
+const audLabel=a=>a==='all'?'All members':a.startsWith('in:')?'In '+TOWN(a.slice(3)):a.startsWith('arr:')?'Arriving '+TOWN(a.slice(4)):a.startsWith('saved:')?'Saved '+(V(a.slice(6))?.name||''):a;
+const audCount=a=>a==='all'?DB.members.filter(m=>m.status==='active').length:a.startsWith('in:')?inTown(a.slice(3)):a.startsWith('arr:')?arriving(a.slice(4)):Math.round(V(a.slice(6))?.stats.saves*.6||0);
+
+/* ---------- reports ---------- */
+function reports(){const t=S.tab||'exp';const st=DB.settings;
+  const tabs=[['exp','Expiries + renewals'],['adv','Who needs more advertising'],['use','Perk usage'],['book','Bookings tracked'],['rev','Revenue']];
+  let body='';
+  if(t==='exp'){const rows=DB.venues.filter(v=>!['draft','prospect'].includes(v.status)).map(v=>({v,d:daysTo(v.expires)})).sort((a,b)=>a.d-b.d);
+    const b=(lo,hi)=>rows.filter(r=>r.d>=lo&&r.d<=hi).length;
+    body=`<div class="grid g6"><div class="kpi"><span>Already ended</span><b>${b(-9999,-1)}</b></div><div class="kpi"><span>Next 30 days</span><b>${b(0,30)}</b></div><div class="kpi"><span>31 to 60 days</span><b>${b(31,60)}</b></div><div class="kpi"><span>61 to 90 days</span><b>${b(61,90)}</b></div><div class="kpi"><span>No card saved</span><b>${DB.venues.filter(v=>!v.card).length}</b></div></div>
+    <div class="row" style="justify-content:space-between"><h2>Every listing and boost, soonest first</h2><button class="btn ghost" data-act="csvexp">Download CSV</button></div>
+    <div class="tw"><table class="tbl"><tr><th>Venue</th><th>Town</th><th>Contact</th><th>Listing ends</th><th>Renewal</th><th>Featured ends</th><th>Last push</th><th></th></tr>${rows.map(({v})=>{const lp=DB.pushes.filter(p=>p.vid===v.id).sort((a,b)=>b.when-a.when)[0];return`<tr><td><b>${esc(v.name)}</b></td><td>${esc(TOWN(v.town))}</td><td>${esc(v.contact.e)}</td><td>${expChip(v.expires)}</td><td>${v.card&&v.autoRenew?'<span class="chip live">Auto</span>':'<span class="chip pending">Manual</span>'}</td><td>${v.featuredUntil?expChip(v.featuredUntil):'—'}</td><td>${lp?fmt(lp.when):'—'}</td><td><button class="btn sm ghost" data-act="chase" data-id="${v.id}">Email</button></td></tr>`}).join('')}</table></div>`;}
+  if(t==='adv'){const rows=DB.venues.filter(v=>v.status==='live').map(v=>{const c=comp(v).pct,conv=v.stats.views?v.stats.uses/v.stats.views:0;const reasons=[];if(c<80)reasons.push(`Profile ${c}%`);if(v.stats.views<600)reasons.push('Low views');if(conv<.02)reasons.push('Few redemptions');if(!(v.featuredUntil>NOW))reasons.push('Not featured');if(!DB.pushes.some(p=>p.vid===v.id))reasons.push('Never pushed');return{v,c,conv,reasons,score:reasons.length}}).sort((a,b)=>b.score-a.score||a.v.stats.uses-b.v.stats.uses);
+    body=`<div class="note">Scored on profile completeness, views, redemption rate, and whether they've ever been featured or pushed. Top of the list = best people to call about a boost.</div>
+    <div class="row" style="justify-content:space-between"><h2>Upsell list</h2><button class="btn ghost" data-act="csvadv">Download CSV</button></div>
+    <div class="tw"><table class="tbl"><tr><th>Venue</th><th>Town</th><th>Views</th><th>Used</th><th>Rate</th><th>Why</th><th></th></tr>${rows.map(r=>`<tr><td><b>${esc(r.v.name)}</b></td><td>${esc(TOWN(r.v.town))}</td><td>${r.v.stats.views}</td><td>${r.v.stats.uses}</td><td>${(r.conv*100).toFixed(1)}%</td><td>${r.reasons.map(x=>`<span class="chip pending">${x}</span>`).join(' ')||'<span class="chip live">Doing well</span>'}</td><td><div class="row" style="flex-wrap:nowrap"><button class="btn sm ghost" data-act="chase" data-id="${r.v.id}" data-k="stats">Send stats</button>${r.v.card?`<button class="btn sm" data-act="charge" data-id="${r.v.id}" data-item="featured">Sell featured</button>`:''}</div></td></tr>`).join('')}</table></div>`;}
+  if(t==='use'){const rows=DB.venues.map(v=>({v,u:v.stats.uses})).sort((a,b)=>b.u-a.u);const tot=rows.reduce((a,r)=>a+r.u,0)||1;
+    const byTown=TOWNS.map(k=>[TOWN(k),DB.venues.filter(v=>v.town===k).reduce((a,v)=>a+v.stats.uses,0)]);const byCat=['Bar','Restaurant','Activity','Free'].map(c=>[c,DB.venues.filter(v=>v.cat===c).reduce((a,v)=>a+v.stats.uses,0)]);
+    const months=[0,1,2,3,4,5].map(i=>DB.venues.reduce((a,v)=>a+v.stats.months[i],0));
+    const hb=(arr)=>{const mx=Math.max(1,...arr.map(x=>x[1]));return arr.map(([n,c])=>`<div class="row" style="flex-wrap:nowrap"><span style="width:120px;font-size:13px">${esc(n)}</span><div class="bar" style="flex:1;height:12px"><i style="width:${c/mx*100}%"></i></div><b style="width:40px;text-align:right">${c}</b></div>`).join('')};
+    body=`<div class="grid g2"><div class="card"><h2>All perks used, last 6 months</h2>${monthBars(months)}</div><div class="card"><h2>By stop</h2>${hb(byTown)}</div><div class="card"><h2>By category</h2>${hb(byCat)}</div><div class="card"><h2>Top 5 this month</h2>${hb(rows.slice(0,5).map(r=>[r.v.name,r.u]))}</div></div>
+    <div class="row" style="justify-content:space-between"><h2>Every perk</h2><button class="btn ghost" data-act="csvuse">Download CSV</button></div>
+    <div class="tw"><table class="tbl"><tr><th>Venue</th><th>Offer</th><th>Town</th><th>Views</th><th>Saves</th><th>Used · mth</th><th>Share</th><th>6-month trend</th></tr>${rows.map(({v,u})=>{const mx=Math.max(1,...v.stats.months);return`<tr><td><b>${esc(v.name)}</b></td><td>${esc(v.offers[0]?.t||'')}</td><td>${esc(TOWN(v.town))}</td><td>${v.stats.views}</td><td>${v.stats.saves}</td><td>${u}</td><td>${(u/tot*100).toFixed(1)}%</td><td><span style="display:inline-flex;gap:2px;align-items:flex-end;height:22px">${v.stats.months.map(n=>`<i style="display:inline-block;width:6px;height:${Math.max(2,n/mx*22)}px;background:#4ECAC2;border-radius:2px"></i>`).join('')}</span></td></tr>`}).join('')}</table></div>`;}
+  if(t==='book'){const rows=DB.venues.filter(v=>v.booking&&v.booking.mode).sort((a,b)=>b.bstats.value-a.bstats.value);const tot=k=>rows.reduce((a,v)=>a+v.bstats[k],0);
+    body=`<div class="grid g6"><div class="kpi"><span>Book now taps</span><b>${tot('taps')}</b></div><div class="kpi"><span>Pages opened</span><b>${tot('opens')}</b></div><div class="kpi"><span>Confirmed bookings</span><b>${tot('bookings')}</b></div><div class="kpi"><span>Booking value</span><b>${money(tot('value'))}</b></div></div>
+    <div class="note">This is the proof for renewals: what each activity got from Perks in bookings and dollars. Venues see the same numbers in their portal.</div>
+    <div class="row" style="justify-content:space-between"><h2>Bookings by venue</h2><button class="btn ghost" data-act="csvbook">Download CSV</button></div>
+    <div class="tw"><table class="tbl"><tr><th>Venue</th><th>Town</th><th>Method</th><th>Taps</th><th>Opened</th><th>Booked</th><th>Rate</th><th>Value</th></tr>${rows.map(v=>{const s=v.bstats;return`<tr><td><b>${esc(v.name)}</b></td><td>${esc(TOWN(v.town))}</td><td>${v.booking.mode==='widget'?`Widget · ${esc(v.booking.provider)}`:'Tracked link'}</td><td>${s.taps}</td><td>${s.opens}</td><td>${s.bookings}</td><td>${s.opens?(s.bookings/s.opens*100).toFixed(1):0}%</td><td>${money(s.value)}</td></tr>`}).join('')}</table></div>
+    <div class="muted">Activities with no booking method yet: ${DB.venues.filter(v=>v.cat==='Activity'&&!(v.booking&&v.booking.mode)).map(v=>esc(v.name)).join(', ')||'none'}.</div>`;}
+  if(t==='rev'){const now=new Date();const ms=[...Array(12)].map((_,i)=>{const d=new Date(now.getFullYear(),now.getMonth()-11+i,1);const sum=DB.tx.filter(x=>x.status==='Approved'&&new Date(x.date).getMonth()===d.getMonth()&&new Date(x.date).getFullYear()===d.getFullYear()).reduce((a,x)=>a+x.amount,0);return{d,sum}});const mx=Math.max(1,...ms.map(m=>m.sum));
+    const due=DB.venues.filter(v=>v.status!=='draft'&&daysTo(v.expires)>=0&&daysTo(v.expires)<=90).length*st.listing;
+    body=`<div class="grid g6"><div class="kpi"><span>Last 12 months</span><b>${money(ms.reduce((a,m)=>a+m.sum,0))}</b></div><div class="kpi"><span>Renewals due · 90 days</span><b>${money(due)}</b></div></div>
+    <div class="card"><h2>Revenue by month</h2><div class="mbars" style="margin:18px 0 20px">${ms.map(m=>`<div style="height:${m.sum/mx*100}%"><em>${m.sum?'$'+Math.round(m.sum):''}</em><span>${m.d.toLocaleString('en-AU',{month:'short'})}</span></div>`).join('')}</div></div>
+    <button class="btn ghost" data-act="csvtx" style="align-self:flex-start">Download all transactions</button>`;}
+  return`<div class="tabs">${tabs.map(([k,n])=>`<button class="${k===t?'on':''}" data-act="tab" data-t="${k}">${n}</button>`).join('')}</div>${body}<div class="muted">Usage and view numbers are sample data in this test version.</div>`;
+}
+
+/* ---------- shell ---------- */
+function render(){
+  const r=$('#root');
+  if(!S.role){r.innerHTML=`<div class="login"><div class="box"><div style="background:#4ECAC2;border-radius:14px;padding:16px;display:flex;align-items:flex-end;gap:8px"><svg style="height:42px;width:auto;transform:rotate(-3deg);overflow:visible" viewBox="0 0 460 112" role="img" aria-label="PERKS"><g font-family="Work Sans, sans-serif" font-weight="900" font-size="130" text-anchor="middle"><text x="239" y="109" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#FFFFFF">PERKS</text></g></svg><span style="display:flex;align-items:center;gap:4px;color:#fff;font-size:11px;font-weight:600">by <img src="${LOGO_WHITE}" alt="ULTIMATE" style="width:60px"></span></div><h1>Traveller Perks</h1><div class="muted">Venue and admin sign-in · perks.ultimate.travel</div>
+    <label class="f">Email<input class="i" type="email" placeholder="you@yourvenue.com.au"></label><label class="f">Password<input class="i" type="password"></label>
+    ${window.PerksAuth&&PerksAuth.live?`<button class="btn mint" data-act="glogin" data-p="google">Continue with Google</button><button class="btn" data-act="elogin">Email me a sign-in link</button><div class="muted">Venues and admins only. Ask the Perks team to add your email.</div>`:`<button class="btn mint" data-act="login" data-r="venue">Sign in as a venue (demo: Flight Club)</button>
+    <button class="btn" data-act="login" data-r="admin">Sign in as Perks admin (demo)</button>`}
+    <div class="muted">${window.PerksAuth&&PerksAuth.live?'':'Test version: any details work. No real accounts. '}<a href="/" data-home>Back to perks.ultimate.travel</a></div></div></div>`;return}
+  const admin=S.role==='admin', asVenue=!admin||S.viewAs;
+  const nav=asVenue?VNAV:ANAV();
+  const v=cv();
+  const title=(asVenue&&v&&S.page==='dash')?'Welcome '+v.name:(!asVenue&&S.page==='dash')?'Welcome Steve':(nav.find(n=>n[0]===S.page)||nav[0])[1];
+  r.innerHTML=`<div class="app"><aside class="side"><div class="brand"><svg style="height:38px;width:auto;transform:rotate(-3deg);overflow:visible;align-self:flex-start" viewBox="0 0 460 112" role="img" aria-label="PERKS"><g font-family="Work Sans, sans-serif" font-weight="900" font-size="130" text-anchor="middle"><text x="239" y="109" fill="#0b2a36" stroke="#0b2a36" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#0b2a36" stroke="#0b2a36" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#FFFFFF">PERKS</text></g></svg><span style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;opacity:.85">by <img src="${LOGO_WHITE}" alt="ULTIMATE" style="width:58px"></span><small>${asVenue?'Venue portal':'Admin dashboard'}</small></div>
+    <nav class="nav">${asVenue&&v?(v.brandId&&brandLocs(v.brandId).length>1?`<div class="sep">${esc(B(v.brandId).name)}</div><select class="i" data-locsw style="margin:0 6px 8px;width:auto;background:#1d4d5e;color:#fff;border-color:#2c5f70">${brandLocs(v.brandId).map(x=>`<option value="${x.id}" ${x.id===v.id?'selected':''}>${esc(x.name)} · ${esc(TOWN(x.town))}</option>`).join('')}</select>`:`<div class="sep">${esc(v.name)}</div>`):''}${nav.map(([k,n,c])=>`<button class="${S.page===k?'on':''}" data-act="go" data-p="${k}">${n}${c?`<span class="cnt">${c}</span>`:''}</button>`).join('')}
+    <div class="sep">Account</div><button data-act="logout">Sign out</button></nav></aside>
+  <div class="main">${admin&&S.viewAs?`<div class="asbar"><span>Viewing as ${esc(v.name)}. You have full control: changes save to their account.</span><button class="btn sm ghost" data-act="exitas">Back to admin</button></div>`:''}
+  <div class="top"><h1>${esc(title)}</h1><div class="who">${asVenue&&v?`${chip(v.status)} <span>${esc(v.name)} · ${esc(TOWN(v.town))}</span>${v.logo?`<img class="vlogo" src="${esc(v.logo)}" alt="${esc(v.name)} logo" onerror="this.remove()">`:''}`:`<span>Signed in as Steve (Owner)</span>`}</div></div>
+  <div class="wrap">${asVenue?vPage():aPage()}</div></div></div>`;
+}
+
+/* ---------- actions ---------- */
+const act={
+  close:closeModal,
+  login:d=>{S.role=d.r;S.page='dash';S.viewAs=null;render()},
+  glogin:d=>{PerksAuth.signIn(d.p).catch(e=>toast(e.message))},
+  elogin:()=>{const em=($('.login input[type=email]')||{}).value||'';if(!/.+@.+\..+/.test(em))return toast('Type your email first');PerksAuth.signInEmail(em).then(()=>toast('Check your inbox for the sign-in link')).catch(e=>toast(e.message))},
+  logout:()=>{if(window.PerksAuth&&PerksAuth.live)PerksAuth.signOut();S.role=null;render()},
+  _oldlogout:()=>{S.role=null;render()},
+  go:d=>{S.page=d.p;S.tab=d.t||null;S.q='';S.ftown='';S.fstatus='';render();scrollTo(0,0)},
+  tab:d=>{S.tab=d.t;render()},
+  etab:d=>{S.tab=d.k;render()},
+  viewas:d=>{S.viewAs=d.id;S.prevPage=S.page;S.page='dash';render();scrollTo(0,0)},
+  exitas:()=>{S.prevVenue=S.viewAs;S.viewAs=null;S.page=S.prevPage||'venues';render()},
+  renew:()=>{const v=cv();checkout({v,amount:DB.settings.listing,desc:'Annual listing, 12 months',type:'Annual listing',onPaid:()=>{v.expires=Math.max(v.expires,NOW)+365*DAY;if(v.status==='expired')v.status='live';save()}})},
+  updcard:()=>checkout({v:cv(),saveOnly:true}),
+  buyfeat:()=>{const v=cv(),w=+$('#fw').value;checkout({v,amount:DB.settings.featuredWeek*w,desc:`Featured, ${w} week${w>1?'s':''}`,type:`Featured (${w} week${w>1?'s':''})`,onPaid:()=>{v.featuredUntil=Math.max(v.featuredUntil,NOW)+w*7*DAY;save()}})},
+  buypush:()=>{const v=cv(),t=$('#pt').value.trim(),b=$('#pb').value.trim();if(!t||!b)return toast('Add a headline and a message first');const w=$('#pw').value?new Date($('#pw').value).getTime():Date.now()+36e5,a=$('#pa').value;
+    checkout({v,amount:DB.settings.push,desc:'Push notification: '+t,type:'Push notification',onPaid:()=>{DB.pushes.unshift({id:uid('P'),title:t,body:b,aud:a,vid:v.id,when:w,status:'Awaiting approval',reach:0,opens:0,paid:'Venue '+money(DB.settings.push)});logA(`Push request from ${v.name}`);save()}})},
+  flash:()=>{const v=cv();modal(`<h2>Flash deal</h2><div class="muted">A short deal that shows straight away with a countdown. Great for quiet nights.</div><label class="f">Deal<input class="i" id="ft" placeholder="Half-price jugs until 7pm"></label><label class="f">Terms<input class="i" id="fterm" placeholder="Show the app at the bar"></label><label class="f">Runs for<select class="i" id="fh"><option value="2">2 hours</option><option value="4" selected>4 hours</option><option value="8">8 hours</option><option value="24">24 hours</option></select></label><label class="row" style="gap:8px"><input type="checkbox" id="fpush"> Also push it to ${inTown(v.town)} travellers in ${esc(TOWN(v.town))} (${money(DB.settings.push)})</label><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn mint" id="fgo">Go live</button></div>`);
+    $('#fgo').onclick=()=>{const tt=$('#ft').value.trim();if(!tt)return toast('Add the deal first');const wantPush=$('#fpush').checked;const o={id:uid('O'),t:tt,terms:$('#fterm').value.trim(),when:null,paused:false,flashUntil:Date.now()+$('#fh').value*36e5};v.offers.unshift(o);save();closeModal();logA(`Flash deal live: ${v.name}`);
+      if(wantPush)checkout({v,amount:DB.settings.push,desc:'Push: '+tt,type:'Push notification',onPaid:()=>{DB.pushes.unshift({id:uid('P'),title:tt.slice(0,40),body:o.terms||'Show the app to claim.',aud:'in:'+v.town,vid:v.id,when:Date.now(),status:'Awaiting approval',reach:0,opens:0,paid:'Venue '+money(DB.settings.push)});save()}});
+      else{toast('Flash deal is live');render()}};},
+  offerpack:()=>{const v=cv();modal(`<h2>Add more offers</h2><p>Your listing includes ${OFFER_BASE} offers${v.offerPacks?` plus ${3*v.offerPacks} from offer packs`:''}. You're using ${standingOffers(v)} of ${offerCap(v)}.</p><p>An offer pack adds 3 more offers to this listing for ${money(DB.settings.offerPack)} a year. Flash deals don't count towards the limit.</p><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Not now</button><button class="btn mint" id="opgo">Add 3 offers · ${money(DB.settings.offerPack)}/yr</button></div>`);
+    $('#opgo').onclick=()=>{closeModal();checkout({v,amount:DB.settings.offerPack,desc:'Offer pack: +3 offers',type:'Offer pack (12 months)',onPaid:()=>{v.offerPacks=(v.offerPacks||0)+1;logA(`Offer pack bought: ${v.name}`);save();toast('3 more offers unlocked');render()}})}},
+  offer:d=>{if(!d.id){const v0=cv();if(standingOffers(v0)>=offerCap(v0))return act.offerpack()}const v=cv(),o=v.offers.find(x=>x.id===d.id)||{t:'',terms:'',when:null};const w=o.when||[[],'',''];
+    modal(`<h2>${d.id?'Edit offer':'New offer'}</h2><label class="f">Offer<input class="i" id="ot" value="${esc(o.t)}" placeholder="2-for-1 cocktails"></label><label class="f">Terms<input class="i" id="oterm" value="${esc(o.terms)}" placeholder="One per person. Show the app."></label>
+    <div class="f" style="font-size:12px;font-weight:700;color:var(--ink2);text-transform:uppercase">Only on these days (leave empty for any time)</div><div class="row">${[1,2,3,4,5,6,0].map(x=>`<label class="row" style="gap:4px;font-size:13px"><input type="checkbox" data-od="${x}" ${w[0].includes(x)?'checked':''}>${DOW[x]}</label>`).join('')}</div>
+    <div class="row" style="flex-wrap:nowrap"><label class="f" style="flex:1">From<input class="i" type="time" id="oo" value="${w[1]}"></label><label class="f" style="flex:1">To<input class="i" type="time" id="oc" value="${w[2]}"></label></div>
+    <div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="osave">Save offer</button></div>`);
+    $('#osave').onclick=()=>{const t=$('#ot').value.trim();if(!t)return toast('Add the offer first');const days=[...document.querySelectorAll('[data-od]:checked')].map(e=>+e.dataset.od);const nw=days.length&&$('#oo').value&&$('#oc').value?[days,$('#oo').value,$('#oc').value]:null;
+      if(d.id){Object.assign(o,{t,terms:$('#oterm').value.trim(),when:nw})}else v.offers.push({id:uid('O'),t,terms:$('#oterm').value.trim(),when:nw,paused:false,flashUntil:0});save();closeModal();toast('Offer saved');render()}},
+  pause:d=>{const o=cv().offers.find(x=>x.id===d.id);o.paused=!o.paused;save();render()},
+  deloffer:d=>confirmBox('Delete this offer?','Travellers will stop seeing it straight away.','Delete',()=>{const v=cv();v.offers=v.offers.filter(x=>x.id!==d.id);save();render()},true),
+  rmlogo:()=>{cv().logo='';save();render()},
+  rmphoto:d=>{cv().photos.splice(+d.i,1);save();render()},
+  confirmhours:()=>{cv().hoursReal=true;save();toast('Hours confirmed');render()},
+  redeem:()=>{const c=$('#vc').value.trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(c))return toast('Codes are 6 letters and numbers');const m=pick(DB.members),v=cv();modal(`<div style="text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center"><div style="width:64px;height:64px;border-radius:50%;background:var(--mint);color:#fff;font:900 34px var(--disp);display:flex;align-items:center;justify-content:center">✓</div><h2>Valid perk</h2><div><b>${esc(v.offers[0]?.t||'')}</b><br>${esc(m.n)} · ${esc(m.tour)}</div><div class="muted">Code ${esc(c)} · used ${fmtT(Date.now())}. Test version: every 6-character code passes.</div><button class="btn" data-act="close">Done</button></div>`);v.stats.uses++;v.stats.months[5]++;save()},
+  savewidget:()=>{const v=cv(),c=$('#bcode').value.trim();if(!/<(script|iframe|a|div)/i.test(c))return toast('Paste the full embed code from your booking system');v.booking={mode:'widget',code:c,url:'',provider:detectProv(c)};logA(`Booking widget added: ${v.name}`);save();toast('Widget saved. Travellers can now book in the app');render()},
+  savelink:()=>{const v=cv(),u=$('#burl').value.trim();if(!/^https?:\/\/\S+\.\S+/.test(u))return toast('Add the full link, starting with https://');v.booking={mode:'link',url:u,code:'',provider:'Own website'};logA(`Booking link added: ${v.name}`);save();render()},
+  clearbook:()=>confirmBox('Turn off bookings?','The Book now button disappears from your perk. Your numbers so far are kept.','Turn off',()=>{cv().booking={mode:'',url:'',code:'',provider:''};save();render()},true),
+  addpromo:()=>{modal(`<h2>New promo code</h2><label class="f">Code<input class="i" id="pc" style="text-transform:uppercase"></label><label class="f">Free months<input class="i" type="number" id="pm" value="6"></label><label class="f">Note<input class="i" id="pn" value="Free listing"></label><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="pgo">Add</button></div>`);$('#pgo').onclick=()=>{const c=$('#pc').value.trim().toUpperCase();if(!c)return;DB.settings.promos.push({code:c,months:+$('#pm').value||6,uses:0,active:true,note:$('#pn').value});save();closeModal();render()}},
+  csvbook:()=>csv('perks-bookings.csv',[['Venue','Town','Method','Provider','Taps','Opened','Booked','Value'],...DB.venues.filter(v=>v.booking&&v.booking.mode).map(v=>[v.name,TOWN(v.town),v.booking.mode,v.booking.provider,v.bstats.taps,v.bstats.opens,v.bstats.bookings,v.bstats.value])]),
+  mkbrand:()=>{const v=cv();modal(`<h2>Set up your brand</h2><label class="f">Brand name<input class="i" id="bn" value="${esc(v.name.replace(/\s+(Cavill|Surfers Paradise|Cairns|Noosa|Byron Bay|Sydney|Brisbane|Airlie Beach)$/i,''))}"></label><label class="f">One line about you<input class="i" id="ba" placeholder="Burritos and bowls, made fresh"></label><div class="muted">This location becomes your first. Next you can add the others for ${money(DB.settings.extraLocation)} a year each.</div><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="bgo">Create brand</button></div>`);
+    $('#bgo').onclick=()=>{const n=$('#bn').value.trim();if(!n)return;const id=n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+Math.random().toString(36).slice(2,5);DB.brands=DB.brands||[];DB.brands.push({id,name:n,about:$('#ba').value.trim(),created:Date.now()});v.brandId=id;logA(`Brand created: ${n}`);save();closeModal();render()}},
+  editbrand:()=>{const v=cv(),b=B(v.brandId);modal(`<h2>Edit brand</h2><label class="f">Brand name<input class="i" id="bn" value="${esc(b.name)}"></label><label class="f">One line about you<input class="i" id="ba" value="${esc(b.about||'')}"></label><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="bgo">Save</button></div>`);$('#bgo').onclick=()=>{b.name=$('#bn').value.trim()||b.name;b.about=$('#ba').value.trim();save();closeModal();render()}},
+  addloc:()=>{const v=cv(),b=B(v.brandId);modal(`<h2>Add a location</h2><label class="f">Location name<input class="i" id="ln" value="${esc(b.name)} "></label><label class="f">Town<select class="i" id="lt">${TOWNS.map(k=>`<option value="${k}">${esc(TOWN(k))}</option>`).join('')}</select></label><label class="f">Street address<input class="i" id="la"></label><label class="f">Phone<input class="i" id="lp"></label>
+    <label class="row" style="gap:8px"><input type="checkbox" id="lc1" checked> Copy logo and photos from ${esc(v.name)}</label><label class="row" style="gap:8px"><input type="checkbox" id="lc2" checked> Copy offers from ${esc(v.name)}</label>
+    <div class="note">${money(DB.settings.extraLocation)} a year for this location, charged now. It goes live once the Perks team has checked it.</div><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn mint" id="lgo">Continue to payment</button></div>`);
+    $('#lgo').onclick=()=>{const n=$('#ln').value.trim(),a=$('#la').value.trim();if(n.length<3||!a)return toast('Add the location name and address');const c1=$('#lc1').checked,c2=$('#lc2').checked,town=$('#lt').value,ph=$('#lp').value.trim();closeModal();
+      checkout({v,amount:DB.settings.extraLocation,desc:'Extra location: '+n,type:'Extra location (12 months)',onPaid:()=>{const id='L'+Date.now();DB.venues.push({id,name:n,town,cat:v.cat,addr:a,lat:'',lon:'',logo:c1?v.logo:'',photos:c1?[...v.photos]:[],desc:v.desc,phone:ph,web:v.web,book:v.book,insta:v.insta,hours:{},hoursReal:false,
+        offers:c2?v.offers.map(o=>({...o,id:uid('O'),flashUntil:0})):[],contact:{...v.contact},status:'pending',expires:Date.now()+365*DAY,autoRenew:v.autoRenew,card:v.card,featuredUntil:0,booking:{mode:'',url:'',code:'',provider:''},bstats:{taps:0,opens:0,bookings:0,value:0},
+        emails:{...v.emails},notes:'Added as extra location of '+b.name,joined:Date.now(),brandId:b.id,stats:{views:0,saves:0,uses:0,months:[0,0,0,0,0,0]}});logA(`Location added to ${b.name}: ${n}`);save()}})}},
+  switchloc:d=>{if(S.role==='admin')S.viewAs=d.id;else S.venueId=d.id;render();scrollTo(0,0)},
+  copyall:d=>{const v=cv(),o=v.offers.find(x=>x.id===d.id),others=brandLocs(v.brandId).filter(x=>x.id!==v.id);confirmBox('Copy to all locations?',`"${esc(o.t)}" will be added to ${others.length} other location${others.length===1?'':'s'}.`,'Copy',()=>{others.forEach(x=>{if(!x.offers.some(y=>y.t===o.t))x.offers.push({...o,id:uid('O'),flashUntil:0})});logA(`Offer rolled out across ${B(v.brandId).name}`);save();toast('Copied to '+others.length+' locations')})},
+  adminbrand:()=>{modal(`<h2>New brand</h2><label class="f">Brand name<input class="i" id="bn"></label><div class="muted">Then link venues to it from each venue's Admin button.</div><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="bgo">Create</button></div>`);$('#bgo').onclick=()=>{const n=$('#bn').value.trim();if(!n)return;DB.brands=DB.brands||[];DB.brands.push({id:n.toLowerCase().replace(/[^a-z0-9]+/g,'-'),name:n,about:'',created:Date.now()});save();closeModal();render()}},
+  invite:d=>{const v=V(d.id);modal(`<h2>Invite ${esc(v.name)}</h2><label class="f">Their email<input class="i" type="email" id="ie" value="${esc(v.contact.e)}"></label><label class="f">Contact name<input class="i" id="in" value="${esc(v.contact.n)}"></label>
+    <div class="mail"><div class="mh"><b style="font:900 20px Work Sans">TRAVELLER PERKS</b></div><div class="mb"><p style="margin:0">Hi there,</p><p style="margin:0">Ultimate runs fully guided Group Tours up the East Coast, and our travellers use the Traveller Perks app in every stop. We'd love ${esc(v.name)} to be on it${v.suggested?`, with something like: ${esc(v.suggested.toLowerCase())}`:''}.</p><p style="margin:0">Listing is $299 a year${v.brandId?', and extra locations are $99 each':''}. Set it up in about ten minutes.</p><a href="#" style="display:inline-block;background:#123B4A;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:10px;align-self:flex-start">List ${esc(v.name)}</a></div></div>
+    <div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="igo">Send invite</button></div>`,true);
+    $('#igo').onclick=()=>{v.contact.e=$('#ie').value.trim();v.contact.n=$('#in').value.trim();if(!/^\S+@\S+\.\S+$/.test(v.contact.e))return toast('Add their email first');v.notes=(v.notes?v.notes+' ':'')+'Invited '+fmt(Date.now())+'.';logA(`Invite sent to ${v.name}`);save();closeModal();toast('Invite sent (test: nothing actually sent)');render()}},
+  csvprospects:()=>csv('perks-prospects.csv',[['Name','Town','Category','Type in app','Suggested deal','Placeholder offer','Address','Latitude','Longitude','Website','Brand','Priority','Check'],...DB.venues.filter(v=>v.status==='prospect').map(v=>[v.name,TOWN(v.town),v.category||'',v.cat,v.suggested||'',v.offers[0]?.t||'',v.addr,v.lat,v.lon,v.web,B(v.brandId)?.name||'',v.priority?'Yes':'',v.needsCheck||''])]),
+  scan:()=>toast('In the venue app this opens the camera to scan the QR'),
+  receipt:d=>{const t=DB.tx.find(x=>x.id===d.id),v=V(t.vid);const gst=t.amount/11;const html=`<html><body style="font-family:Arial;max-width:560px;margin:40px auto;color:#123B4A"><h2>Tax invoice / receipt</h2><p>Traveller Perks by Ultimate<br>perks.ultimate.travel<br>ABN: [add ABN]</p><p><b>Billed to:</b> ${esc(v.name)}<br>${esc(v.addr)}</p><table style="width:100%;border-collapse:collapse"><tr><td>${esc(t.type)}</td><td style="text-align:right">${money(t.amount)}</td></tr><tr><td>GST included</td><td style="text-align:right">${money(gst)}</td></tr></table><p>Paid ${fmt(t.date)} by ${esc(t.method)} · eWay ${t.id}</p></body></html>`;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=`receipt-${t.id}.html`;a.click();toast('Receipt downloaded')},
+  preview:d=>modal(emailHTML(d.k,cv())+`<button class="btn" data-act="close" style="align-self:flex-end">Close</button>`,true),
+  approve:d=>{const v=V(d.id);v.status='live';logA(`Approved venue: ${v.name}`);save();toast(v.name+' is live');render()},
+  approvepush:d=>{const p=DB.pushes.find(x=>x.id===d.id);p.status=p.when>Date.now()?'Scheduled':'Sent';p.reach=audCount(p.aud);p.opens=Math.round(p.reach*.3);logA(`Push approved: ${p.title}`);save();render()},
+  rejectpush:d=>confirmBox('Reject this push?','The venue gets an email and a full refund.','Reject and refund',()=>{const p=DB.pushes.find(x=>x.id===d.id);p.status='Rejected';const t=DB.tx.find(x=>x.vid===p.vid&&/Push/.test(x.type)&&x.status==='Approved');if(t){DB.tx.unshift({...t,id:'EW'+Math.floor(10240000+Math.random()*9e4),date:Date.now(),amount:-t.amount,status:'Refunded',type:'Refund: push'})}logA(`Push rejected: ${p.title}`);save();render()},true),
+  chase:d=>{const v=V(d.id),k=d.k||(daysTo(v.expires)<0?'expired':'renewal');modal(emailHTML(k,v)+`<div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="snd">Send to ${esc(v.contact.e)}</button></div>`,true);$('#snd').onclick=()=>{closeModal();logA(`Email sent to ${v.name}`);toast('Email sent (test: nothing actually sent)')}},
+  remindall:()=>{const l=DB.venues.filter(v=>v.status!=='prospect'&&comp(v).pct<100&&v.emails.profile);confirmBox('Send profile reminders?',`Each of the ${l.length} venues gets their own % and missing steps.`,'Send '+l.length+' emails',()=>{logA(`Profile reminder sent to ${l.length} venues`);toast(l.length+' reminders queued (test: nothing actually sent)');render()})},
+  testmail:()=>toast('Test sent to '+DB.settings.admins[0].e+' (test: nothing actually sent)'),
+  charge:d=>{const st=DB.settings;const items={listing:['Annual listing renewal',st.listing],featured:['Featured (1 week)',st.featuredWeek],push:['Push notification',st.push],custom:['Custom charge',0]};
+    modal(`<h2>Charge a saved card</h2><label class="f">Venue<select class="i" id="cvn">${DB.venues.filter(v=>v.card).map(v=>`<option value="${v.id}" ${v.id===d.id?'selected':''}>${esc(v.name)} · ${v.card.brand} •• ${v.card.last4}</option>`).join('')}</select></label>
+    <label class="f">For<select class="i" id="cit">${Object.entries(items).map(([k,[n,p]])=>`<option value="${k}" ${k===(d.item||'listing')?'selected':''}>${n}${p?' · '+money(p):''}</option>`).join('')}</select></label>
+    <label class="f">Amount (AUD, incl. GST)<input class="i" type="number" id="cam" value="${items[d.item||'listing'][1]}"></label><label class="f">Description on receipt<input class="i" id="cds" value="${items[d.item||'listing'][0]}"></label>
+    <div class="muted">Charged through eWay using the venue's saved token. The venue gets a receipt by email.</div><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn mint" id="cgo">Charge</button></div>`);
+    $('#cit').onchange=e=>{$('#cam').value=items[e.target.value][1];$('#cds').value=items[e.target.value][0]};
+    $('#cgo').onclick=()=>{const v=V($('#cvn').value),amt=+$('#cam').value,ds=$('#cds').value,k=$('#cit').value;if(!(amt>0))return toast('Enter an amount');
+      confirmBox('Confirm charge',`Charge <b>${money(amt)}</b> to ${esc(v.name)}'s ${v.card.brand} •• ${v.card.last4} for "${esc(ds)}"?`,'Charge '+money(amt),()=>{DB.tx.unshift({id:'EW'+Math.floor(10240000+Math.random()*9e4),date:Date.now(),vid:v.id,type:ds,amount:amt,status:'Approved',method:`${v.card.brand} •• ${v.card.last4}`});
+        if(k==='listing'){v.expires=Math.max(v.expires,NOW)+365*DAY;if(v.status==='expired')v.status='live'}if(k==='featured')v.featuredUntil=Math.max(v.featuredUntil,NOW)+7*DAY;logA(`Charged ${v.name} ${money(amt)}: ${ds}`);save();toast('Approved (sandbox)');render()})}},
+  refund:d=>{const t=DB.tx.find(x=>x.id===d.id);confirmBox('Refund this payment?',`${money(t.amount)} back to ${esc(t.method)} (${esc(V(t.vid)?.name)}).`,'Refund',()=>{DB.tx.unshift({...t,id:'EW'+Math.floor(10240000+Math.random()*9e4),date:Date.now(),amount:-t.amount,status:'Refunded',type:'Refund: '+t.type});logA(`Refunded ${V(t.vid)?.name} ${money(t.amount)}`);save();render()},true)},
+  retry:d=>{const t=DB.tx.find(x=>x.id===d.id),v=V(t.vid);if(!v.card)return toast('No card saved for this venue');t.status='Approved';t.method=`${v.card.brand} •• ${v.card.last4}`;t.reason='';logA(`Retry approved: ${v.name}`);save();render()},
+  vedit:d=>{const v=V(d.id);modal(`<h2>Admin: ${esc(v.name)}</h2><label class="f">Status<select class="i" id="vs">${['live','pending','prospect','draft','expired','suspended'].map(s=>`<option ${s===v.status?'selected':''}>${s}</option>`).join('')}</select></label><label class="f">Brand<select class="i" id="vb"><option value="">None</option>${(DB.brands||[]).map(b=>`<option value="${b.id}" ${v.brandId===b.id?'selected':''}>${esc(b.name)}</option>`).join('')}</select></label><label class="f">Listing ends<input class="i" type="date" id="ve" value="${new Date(v.expires).toISOString().slice(0,10)}"></label><label class="f">Private notes<textarea class="i" id="vn">${esc(v.notes)}</textarea></label>
+    <div class="row" style="justify-content:space-between"><button class="btn danger" id="vdel">Delete venue</button><div class="row"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="vsv">Save</button></div></div>`);
+    $('#vsv').onclick=()=>{v.brandId=$('#vb').value||'';v.status=$('#vs').value;v.expires=new Date($('#ve').value).getTime();v.notes=$('#vn').value;logA(`Admin edit: ${v.name}`);save();closeModal();render()};
+    $('#vdel').onclick=()=>confirmBox('Delete '+v.name+'?','This removes the venue, its offers and photos. Payment history is kept for your records.','Delete venue',()=>{DB.venues=DB.venues.filter(x=>x.id!==v.id);logA(`Deleted venue: ${v.name}`);save();render()},true)},
+  addvenue:()=>{modal(`<h2>Add a venue</h2><label class="f">Venue name<input class="i" id="nn"></label><label class="f">Town<select class="i" id="nt">${TOWNS.map(t=>`<option value="${t}">${esc(TOWN(t))}</option>`).join('')}</select></label><label class="f">Contact email<input class="i" type="email" id="ne"></label><div class="muted">They get the welcome email with a link to set a password and finish their profile.</div><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="ngo">Add and send invite</button></div>`);
+    $('#ngo').onclick=()=>{const n=$('#nn').value.trim();if(!n)return;const id=String(Date.now());DB.venues.push({id,name:n,town:$('#nt').value,cat:'Bar',addr:'',lat:'',lon:'',logo:'',photos:[],desc:'',phone:'',web:'',book:'',insta:'',hours:{},hoursReal:false,offers:[],contact:{n:'Manager',e:$('#ne').value||'not set'},status:'draft',expires:NOW,autoRenew:true,card:null,featuredUntil:0,emails:{profile:true,monthly:true,stats:true},notes:'',joined:NOW,stats:{views:0,saves:0,uses:0,months:[0,0,0,0,0,0]}});logA(`Venue added: ${n}`);save();closeModal();render()}},
+  mview:d=>{const m=DB.members.find(x=>x.id===d.id);modal(`<h2>${esc(m.n)}</h2><div>${esc(m.e)} · ${m.ref}<br>${esc(m.tour)}<br>Now in ${esc(TOWN(m.town))}, next stop ${esc(TOWN(m.next))} on ${fmt(m.arrive)}<br>Signed in with ${m.via} · joined ${fmt(m.joined)}</div><div class="grid g3"><div class="kpi"><span>Perks used</span><b>${m.used}</b></div><div class="kpi"><span>Saved</span><b>${m.saved}</b></div></div><div class="row" style="justify-content:flex-end"><button class="btn" data-act="close">Close</button></div>`)},
+  mblock:d=>{const m=DB.members.find(x=>x.id===d.id);m.status=m.status==='blocked'?'active':'blocked';logA(`${m.status==='blocked'?'Blocked':'Unblocked'} member ${m.n}`);save();render()},
+  mdel:d=>{const m=DB.members.find(x=>x.id===d.id);confirmBox('Delete '+m.n+'?','Their account, saved perks and history are removed for good. They can sign up again later.','Delete member',()=>{DB.members=DB.members.filter(x=>x.id!==m.id);logA(`Deleted member ${m.n}`);save();render()},true)},
+  sendpush:()=>{const t=$('#pt').value.trim(),b=$('#pb').value.trim();if(!t||!b)return toast('Add a headline and message');const a=$('#pa').value,vid=$('#pv').value,w=$('#pw').value?new Date($('#pw').value).getTime():Date.now(),bill=$('#pbill').value;const n=audCount(a);
+    const go=paid=>{DB.pushes.unshift({id:uid('P'),title:t,body:b,aud:a,vid,when:w,status:w>Date.now()+6e4?'Scheduled':'Sent',reach:n,opens:Math.round(n*.3),paid});logA(`Push to ${n} members: ${t}`);save();toast(`Push ${w>Date.now()+6e4?'scheduled':'sent'} to ${n} members (test)`);render()};
+    if(bill==='charge'){const v=V(vid);if(!v||!v.card)return toast('Pick a venue with a saved card');confirmBox('Send and charge?',`Send to <b>${n}</b> members and charge ${esc(v.name)} ${money(DB.settings.push)} on ${v.card.brand} •• ${v.card.last4}?`,'Send and charge',()=>{DB.tx.unshift({id:'EW'+Math.floor(10240000+Math.random()*9e4),date:Date.now(),vid:v.id,type:'Push notification',amount:DB.settings.push,status:'Approved',method:`${v.card.brand} •• ${v.card.last4}`});go('Venue '+money(DB.settings.push))})}
+    else confirmBox('Send push?',`Send to <b>${n}</b> members: "${esc(t)}"`,'Send',()=>go('House'))},
+  addfeat:()=>{modal(`<h2>Feature a venue</h2><label class="f">Venue<select class="i" id="fv">${DB.venues.filter(v=>v.status==='live').map(v=>`<option value="${v.id}">${esc(v.name)}</option>`).join('')}</select></label><label class="f">Weeks<input class="i" type="number" id="fwk" value="1" min="1"></label><label class="row" style="gap:8px"><input type="checkbox" id="fch"> Charge their saved card</label><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="fgo2">Feature</button></div>`);
+    $('#fgo2').onclick=()=>{const v=V($('#fv').value),w=+$('#fwk').value||1;if($('#fch').checked){if(!v.card)return toast('No card saved');DB.tx.unshift({id:'EW'+Math.floor(10240000+Math.random()*9e4),date:Date.now(),vid:v.id,type:`Featured (${w} week${w>1?'s':''})`,amount:DB.settings.featuredWeek*w,status:'Approved',method:`${v.card.brand} •• ${v.card.last4}`})}v.featuredUntil=Math.max(v.featuredUntil,NOW)+w*7*DAY;logA(`Featured ${v.name} for ${w} weeks`);save();closeModal();render()}},
+  extfeat:d=>{V(d.id).featuredUntil+=7*DAY;save();render()},
+  endfeat:d=>confirmBox('End featured now?','They drop out of the Featured slider straight away.','End',()=>{V(d.id).featuredUntil=0;save();render()},true),
+  rev:d=>{DB.reviews[+d.i].ok=!DB.reviews[+d.i].ok;save();render()},
+  pullnow:()=>{DB.content.pulled=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});save();toast('Pull queued. The live build fetches every council feed');render()},
+  addadmin:()=>{modal(`<h2>Add admin</h2><label class="f">Name<input class="i" id="an"></label><label class="f">Email<input class="i" id="ae" type="email"></label><label class="f">Role<select class="i" id="ar"><option>Admin</option><option>Support</option></select></label><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="ago">Send invite</button></div>`);$('#ago').onclick=()=>{if(!$('#an').value)return;DB.settings.admins.push({n:$('#an').value,e:$('#ae').value,role:$('#ar').value});save();closeModal();render()}},
+  resetdemo:()=>confirmBox('Reset test data?','Puts all venues, members and payments back to the starting sample.','Reset',()=>{DB=seedData();save();render()},true),
+  csvvenues:()=>csv('perks-venues.csv',[['Venue','Brand','Town','Category','Status','Profile %','Missing','Listing ends','Days left','Auto-renew','Card','Featured until','Views','Saves','Used this month','Contact','Email'],...DB.venues.map(v=>{const c=comp(v);return[v.name,B(v.brandId)?.name||'',TOWN(v.town),v.cat,v.status,c.pct,c.missing.map(i=>i.k).join(' '),fmt(v.expires),daysTo(v.expires),v.autoRenew?'Yes':'No',v.card?`${v.card.brand} ${v.card.last4}`:'None',v.featuredUntil?fmt(v.featuredUntil):'',v.stats.views,v.stats.saves,v.stats.uses,v.contact.n,v.contact.e]})]),
+  csvexp:()=>csv('perks-expiries.csv',[['Venue','Town','Email','Listing ends','Days left','Renewal','Featured ends','Last push'],...DB.venues.filter(v=>v.status!=='draft').sort((a,b)=>a.expires-b.expires).map(v=>{const lp=DB.pushes.filter(p=>p.vid===v.id).sort((a,b)=>b.when-a.when)[0];return[v.name,TOWN(v.town),v.contact.e,fmt(v.expires),daysTo(v.expires),v.card&&v.autoRenew?'Auto':'Manual',v.featuredUntil?fmt(v.featuredUntil):'',lp?fmt(lp.when):'']})]),
+  csvadv:()=>csv('perks-upsell-list.csv',[['Venue','Town','Profile %','Views','Used','Rate %','Featured now','Ever pushed','Email'],...DB.venues.filter(v=>v.status==='live').map(v=>[v.name,TOWN(v.town),comp(v).pct,v.stats.views,v.stats.uses,(v.stats.views?v.stats.uses/v.stats.views*100:0).toFixed(1),v.featuredUntil>NOW?'Yes':'No',DB.pushes.some(p=>p.vid===v.id)?'Yes':'No',v.contact.e])]),
+  csvuse:()=>{const now=new Date();const mh=[0,1,2,3,4,5].map(i=>new Date(now.getFullYear(),now.getMonth()-5+i,1).toLocaleString('en-AU',{month:'short',year:'2-digit'}));csv('perks-usage.csv',[['Venue','Offer','Town','Category','Views','Saves',...mh],...DB.venues.map(v=>[v.name,v.offers[0]?.t||'',TOWN(v.town),v.cat,v.stats.views,v.stats.saves,...v.stats.months])])},
+  csvtx:()=>csv('perks-transactions.csv',[['Date','eWay ID','Venue','Item','Amount','Card','Status'],...DB.tx.map(t=>[fmt(t.date),t.id,V(t.vid)?.name||'',t.type,t.amount.toFixed(2),t.method,t.status])]),
+  csvmembers:()=>csv('perks-members.csv',[['Name','Email','Booking','Tour','Now in','Next stop','Arrives','Signed in with','Perks used','Saved','Status'],...DB.members.map(m=>[m.n,m.e,m.ref,m.tour,TOWN(m.town),TOWN(m.next),fmt(m.arrive),m.via,m.used,m.saved,m.status])]),
+  csvpush:()=>csv('perks-pushes.csv',[['Headline','Message','Audience','Venue','When','Status','Reached','Opened','Paid'],...DB.pushes.map(p=>[p.title,p.body,audLabel(p.aud),V(p.vid)?.name||'House',fmtT(p.when),p.status,p.reach,p.opens,p.paid])]),
+};
+document.addEventListener('click',e=>{if(e.target.closest('[data-home]')&&window.parent!==window){e.preventDefault();window.parent.__closePortal();return}const a=e.target.closest('[data-act]');if(!a)return;const f=act[a.dataset.act];if(f){e.preventDefault();f(a.dataset,a)}});
+document.addEventListener('input',e=>{const t=e.target;
+  if(t.id==='pt'&&$('#pvt'))$('#pvt').textContent=t.value||'Happy hour starts now';
+  if(t.id==='pb'&&$('#pvb'))$('#pvb').textContent=t.value||'Half-price jugs until 7pm. Show the app.';
+  if(t.matches('[data-q]')){S.q=t.value;const pos=t.selectionStart;render();const n=$('[data-q]');n.focus();n.setSelectionRange(pos,pos)}});
+document.addEventListener('change',e=>{const t=e.target,v=cv();
+  if(t.matches('[data-f]')){v[t.dataset.f]=t.value;save();render();toast('Saved')}
+  if(t.matches('[data-c]')){v.contact[t.dataset.c]=t.value;save();toast('Saved')}
+  if(t.matches('[data-h]')){const d=t.dataset.h;v.hours[d]=v.hours[d]||['',''];v.hours[d][+t.dataset.w]=t.value;save()}
+  if(t.matches('[data-closed]')){const d=t.dataset.closed;if(t.checked)delete v.hours[d];else v.hours[d]=['11:00','22:00'];save();render()}
+  if(t.matches('[data-em]')){v.emails[t.dataset.em]=t.checked;save();toast('Saved')}
+  if(t.matches('[data-act2=autorenew]')){v.autoRenew=t.checked;save();render()}
+  if(t.matches('[data-ft]')){S.ftown=t.value;render()}
+  if(t.matches('[data-fs]')){S.fstatus=t.value;render()}
+  if(t.matches('[data-auto]')){DB.autos.find(a=>a.k===t.dataset.auto).on=t.checked;save();toast('Saved')}
+  if(t.matches('[data-subj]')){DB.autos.find(a=>a.k===t.dataset.subj).subj=t.value;save();render()}
+  if(t.matches('[data-pv]')){S.prevVenue=t.value;render()}
+  if(t.matches('[data-importcsv]')){const f=t.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const rows=parseCSV(rd.result);const h=rows.shift().map(x=>x.trim().toLowerCase());const col=n=>h.indexOf(n);let n=0,skip=0;
+    rows.forEach(r=>{const name=(r[col('name')]||'').trim();if(!name)return;const tw=TOWNS.find(k=>TOWN(k).toLowerCase().startsWith((r[col('town')]||'').trim().toLowerCase().split(' /')[0]))||'';if(DB.venues.some(v=>v.name.toLowerCase()===name.toLowerCase()&&v.town===tw)){skip++;return}
+      DB.venues.push({id:'P'+Date.now()+n,name,town:tw,cat:r[col('type in app')]||'Bar',addr:r[col('address')]||'',lat:r[col('latitude')]||'',lon:r[col('longitude')]||'',logo:'',photos:[],desc:'',phone:'',web:r[col('website')]||'',book:'',insta:'',hours:{},hoursReal:false,offers:[{id:uid('O'),t:r[col('placeholder offer')]||'Save 10%',terms:'Placeholder offer. Confirm before going live.',when:null,paused:false,flashUntil:0}],contact:{n:'',e:''},status:'prospect',priority:/yes/i.test(r[col('priority')]||''),suggested:r[col('suggested deal')]||'',category:r[col('category')]||'',expires:Date.now(),autoRenew:false,card:null,featuredUntil:0,booking:{mode:'',url:'',code:'',provider:''},bstats:{taps:0,opens:0,bookings:0,value:0},emails:{profile:true,monthly:true,stats:true},notes:'Imported from CSV',joined:Date.now(),brandId:((DB.brands||[]).find(b=>b.name.toLowerCase()===(r[col('brand')]||'').trim().toLowerCase())||{}).id||'',stats:{views:0,saves:0,uses:0,months:[0,0,0,0,0,0]}});n++});
+    logA(`Imported ${n} venues from CSV`);save();toast(n+' imported as prospects'+(skip?`, ${skip} already in the system skipped`:''));render()};rd.readAsText(f);return}
+  if(t.matches('[data-locsw]')){if(S.role==='admin')S.viewAs=t.value;else S.venueId=t.value;render();return}
+  if(t.matches('[data-promo]')){DB.settings.promos[+t.dataset.promo].active=t.checked;save();toast('Saved')}
+  if(t.matches('[data-set]')){const k=t.dataset.set;DB.settings[k]=t.type==='checkbox'?t.checked:t.type==='number'?+t.value:t.value;save();toast('Saved')}
+  if(t.matches('[data-up]')){const files=[...t.files];const kind=t.dataset.up;
+    files.slice(0,kind==='logo'?1:8-v.photos.length).forEach(f=>{const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=()=>{const mx=kind==='logo'?400:1000,s=Math.min(1,mx/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*s;c.height=img.height*s;c.getContext('2d').drawImage(img,0,0,c.width,c.height);const u=c.toDataURL(kind==='logo'?'image/png':'image/jpeg',.82);if(kind==='logo')v.logo=u;else v.photos.push(u);save();render()};img.src=rd.result};rd.readAsDataURL(f)})}
+});
+render();
+</script>
+<script>
+// // live sign-in: role comes from the profiles table (admin or venue)
+window.addEventListener('perksauth:ready',()=>{ if(!window.PerksAuth||!PerksAuth.live) return; render();
+  PerksAuth.onChange((u,prof)=>{ if(!u){ if(S.role){S.role=null;render()} return; }
+    if(!prof||!prof.role||prof.role==='traveller'){ toast('This account is not set up as a venue or admin yet'); return; }
+    S.role=prof.role==='admin'?'admin':'venue'; if(prof.venue_id) S.venueId=prof.venue_id; S.page='dash'; render(); });
+});
+</script>
+</body>
+</html>

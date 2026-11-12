@@ -1,0 +1,13 @@
+{
+  "name": "ultimate-perks",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Traveller Perks: perks.ultimate.travel, /app and /admin",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "serve": "npx --yes serve dist -l 5173",
+    "seed": "node scripts/seed.mjs"
+  },
+  "engines": { "node": ">=20" }
+}
