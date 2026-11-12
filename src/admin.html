@@ -167,6 +167,8 @@ input.i:focus,select.i:focus,textarea.i:focus{outline:2px solid var(--mint);bord
 .login-logo .lockup svg{height:42px;max-width:100%}
 .login-logo .byline{align-self:center;margin-top:8px}
 
+/* // CSS NAME: perks-admin-back // */
+.nav .backadm{background:#4ECAC2;color:#fff;font-weight:900;margin:0 6px 10px;border-radius:10px}
 </style>
 <script src="/config.js"></script>
 <script type="module" src="/auth.js"></script>
@@ -652,7 +654,7 @@ function render(){
   const v=cv();
   const title=(asVenue&&v&&S.page==='dash')?'Welcome '+v.name:(!asVenue&&S.page==='dash')?'Welcome Steve':(nav.find(n=>n[0]===S.page)||nav[0])[1];
   r.innerHTML=`<div class="app"><aside class="side"><div class="brand"><svg style="height:38px;width:auto;transform:rotate(-3deg);overflow:visible;align-self:flex-start" viewBox="0 0 460 112" role="img" aria-label="PERKS"><g font-family="Work Sans, sans-serif" font-weight="900" font-size="130" text-anchor="middle"><text x="239" y="109" fill="#0b2a36" stroke="#0b2a36" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#0b2a36" stroke="#0b2a36" stroke-width="16" stroke-linejoin="round">PERKS</text><text x="230" y="100" fill="#FFFFFF">PERKS</text></g></svg><span style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;opacity:.85">by <img src="${LOGO_WHITE}" alt="ULTIMATE" style="width:58px"></span><small>${asVenue?'Venue portal':'Admin dashboard'}</small></div>
-    <nav class="nav">${asVenue&&v?(v.brandId&&brandLocs(v.brandId).length>1?`<div class="sep">${esc(B(v.brandId).name)}</div><select class="i" data-locsw style="margin:0 6px 8px;width:auto;background:#1d4d5e;color:#fff;border-color:#2c5f70">${brandLocs(v.brandId).map(x=>`<option value="${x.id}" ${x.id===v.id?'selected':''}>${esc(x.name)} · ${esc(TOWN(x.town))}</option>`).join('')}</select>`:`<div class="sep">${esc(v.name)}</div>`):''}${nav.map(([k,n,c])=>`<button class="${S.page===k?'on':''}" data-act="go" data-p="${k}">${n}${c?`<span class="cnt">${c}</span>`:''}</button>`).join('')}
+    <nav class="nav">${asVenue&&v?(v.brandId&&brandLocs(v.brandId).length>1?`<div class="sep">${esc(B(v.brandId).name)}</div><select class="i" data-locsw style="margin:0 6px 8px;width:auto;background:#1d4d5e;color:#fff;border-color:#2c5f70">${brandLocs(v.brandId).map(x=>`<option value="${x.id}" ${x.id===v.id?'selected':''}>${esc(x.name)} · ${esc(TOWN(x.town))}</option>`).join('')}</select>`:`<div class="sep">${esc(v.name)}</div>`):''}${admin&&S.viewAs?`<button class="backadm" data-act="exitas">&larr; Back to admin</button>`:''}${nav.map(([k,n,c])=>`<button class="${S.page===k?'on':''}" data-act="go" data-p="${k}">${n}${c?`<span class="cnt">${c}</span>`:''}</button>`).join('')}
     <div class="sep">Account</div><button data-act="logout">Sign out</button></nav></aside>
   <div class="main">${admin&&S.viewAs?`<div class="asbar"><span>Viewing as ${esc(v.name)}. You have full control: changes save to their account.</span><button class="btn sm ghost" data-act="exitas">Back to admin</button></div>`:''}
   <div class="top"><h1>${esc(title)}</h1><div class="who">${asVenue&&v?`${chip(v.status)} <span>${esc(v.name)} · ${esc(TOWN(v.town))}</span>${v.logo?`<img class="vlogo" src="${esc(v.logo)}" alt="${esc(v.name)} logo" onerror="this.remove()">`:''}`:`<span>Signed in as Steve (Owner)</span>`}</div></div>
@@ -671,7 +673,7 @@ const act={
   tab:d=>{S.tab=d.t;render()},
   etab:d=>{S.tab=d.k;render()},
   viewas:d=>{S.viewAs=d.id;S.prevPage=S.page;S.page='dash';render();scrollTo(0,0)},
-  exitas:()=>{S.prevVenue=S.viewAs;S.viewAs=null;S.page=S.prevPage||'venues';render()},
+  exitas:()=>{S.prevVenue=S.viewAs;S.viewAs=null;S.page=ANAV().some(n=>n[0]===S.prevPage)?S.prevPage:'venues';render();scrollTo(0,0)},
   renew:()=>{const v=cv();checkout({v,amount:DB.settings.listing,desc:'Annual listing, 12 months',type:'Annual listing',onPaid:()=>{v.expires=Math.max(v.expires,NOW)+365*DAY;if(v.status==='expired')v.status='live';save()}})},
   updcard:()=>checkout({v:cv(),saveOnly:true}),
   buyfeat:()=>{const v=cv(),w=+$('#fw').value;checkout({v,amount:DB.settings.featuredWeek*w,desc:`Featured, ${w} week${w>1?'s':''}`,type:`Featured (${w} week${w>1?'s':''})`,onPaid:()=>{v.featuredUntil=Math.max(v.featuredUntil,NOW)+w*7*DAY;save()}})},
