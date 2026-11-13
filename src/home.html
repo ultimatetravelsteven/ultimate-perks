@@ -109,7 +109,7 @@ img{max-width:100%}
 /* // CSS NAME: home-steps // */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
 .step{background:#fff;border-radius:20px;padding:28px;box-shadow:0 6px 22px rgba(18,59,74,.08);position:relative}
-.step::before{counter-increment:s;content:counter(s);display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:16px;background:var(--teal);color:#fff;font-weight:900;font-size:26px;margin-bottom:16px}
+.step::before{content:attr(data-n);display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:16px;background:var(--teal);color:#fff;font-weight:900;font-size:26px;margin-bottom:16px}
 .step h3{font-size:22px;margin-bottom:8px}
 .step p{margin:0;color:var(--ink2)}
 @media(max-width:820px){.steps{grid-template-columns:1fr}.hero .w{grid-template-columns:1fr}.phone{display:none}}
@@ -183,6 +183,32 @@ img{max-width:100%}
 /* // CSS NAME: home-mobile // */
 .nav a.btn{white-space:nowrap}
 @media(max-width:520px){.lock .pk{height:32px}.lock .by img{width:50px}.nav a.btn{min-height:40px;padding:0 14px;font-size:13px}.valid{font-size:11px;letter-spacing:.08em;white-space:nowrap}}
+/* // CSS NAME: home-mobile-rows // */
+@media(max-width:720px){
+ .mrow{display:flex!important;flex-wrap:nowrap;gap:12px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;margin:0 -24px;padding:4px 24px 14px;grid-template-columns:none!important;counter-reset:none}
+ .mrow::-webkit-scrollbar{display:none}
+ .mrow>*{flex:0 0 auto}
+ .offers.mrow>.oc{width:168px}
+ .offers.mrow .oc .im{padding-top:78%}
+ .offers.mrow .oc .deal{height:64px;font-size:13px;padding:0 12px}
+ .offers.mrow .oc .deal.l{font-size:11.5px}
+ .offers.mrow .oc .nm{height:56px;padding:9px 12px;font-size:13px}
+ .offers.mrow .oc .nm small{font-size:11px}
+ .offers.mrow .oc .tag{font-size:9px;padding:4px 8px}
+ .steps.mrow>.step{width:230px;padding:20px}
+ .steps.mrow .step::before{width:42px;height:42px;font-size:21px;margin-bottom:12px}
+ .steps.mrow .step h3{font-size:18px}
+ .steps.mrow .step p{font-size:14px}
+ .evs.mrow>.ev{width:200px;min-height:170px;padding:18px}
+ .evs.mrow .ev b{font-size:19px}
+ .evs.mrow .ev p{font-size:13px}
+ .stops.mrow>.stop{width:150px;padding-top:0;height:120px}
+ .stops.mrow .stop b{font-size:15px}
+ .acts.mrow>.ac{width:190px}
+ .acts.mrow .ac b{font-size:13px}
+ .acts.mrow .ac small{font-size:11px}
+ .acts.mrow .ac .pr{font-size:11px}
+}
 </style>
 </head>
 <body>
@@ -210,7 +236,7 @@ img{max-width:100%}
   <div class="eyebrow">Real perks in the app now</div>
   <h2>Deals you'll actually use</h2>
   <p class="lead">Drinks, food, activities and nights out at the places travellers already go. Every perk works for any traveller with the app. No booking with us needed.</p>
-  <div class="offers" id="offergrid"></div>
+  <div class="offers" id="offergrid" data-mrow></div>
   <div class="morebar"><a class="btn teal" href="/app/">See all perks in the app</a></div>
 </div></section>
 
@@ -218,10 +244,10 @@ img{max-width:100%}
   <div class="eyebrow">How it works</div>
   <h2>Three taps to save</h2>
   <p class="lead">No codes to remember and nothing to print.</p>
-  <div class="steps">
-    <div class="step"><h3>Get the app</h3><p>Open Perks on your phone. It's free and takes ten seconds. Add it to your home screen so it's there when you need it.</p></div>
-    <div class="step"><h3>Find a perk</h3><p>Browse by stop or see what's near you. Every venue shows the deal, the hours and where it is on the map.</p></div>
-    <div class="step"><h3>Show and save</h3><p>Tap Use at the counter and show the live voucher to staff. One use per person per day, at every venue.</p></div>
+  <div class="steps" data-mrow>
+    <div class="step" data-n="1"><h3>Get the app</h3><p>Open Perks on your phone. It's free and takes ten seconds. Add it to your home screen so it's there when you need it.</p></div>
+    <div class="step" data-n="2"><h3>Find a perk</h3><p>Browse by stop or see what's near you. Every venue shows the deal, the hours and where it is on the map.</p></div>
+    <div class="step" data-n="3"><h3>Show and save</h3><p>Tap Use at the counter and show the live voucher to staff. One use per person per day, at every venue.</p></div>
   </div>
 </div></section>
 
@@ -229,7 +255,7 @@ img{max-width:100%}
   <div class="eyebrow">Members' events</div>
   <h2>Theme event notices and deals</h2>
   <p class="lead">The big backpacker dates of the year. Perks venues post their themed events and member deals in the app, and you get a notice so you don't miss them.</p>
-  <div class="evs">
+  <div class="evs" data-mrow>
     <div class="ev" style="--c:#1F9D55"><small>17 March</small><b>St Patrick's Day</b><p>Green beer, Irish pubs and the biggest traveller pub crawl of the year.</p></div>
     <div class="ev" style="--c:#E0A21B"><small>Late Sept to Oct</small><b>Oktoberfest</b><p>Steins, pretzels and beer halls. Lederhosen optional, encouraged.</p></div>
     <div class="ev" style="--c:#5B2C83"><small>31 October</small><b>Halloween</b><p>Costume nights and hostel parties up the coast.</p></div>
@@ -246,7 +272,7 @@ img{max-width:100%}
   <div class="eyebrow">Melbourne to Cairns</div>
   <h2>Perks at every stop</h2>
   <p class="lead">The towns backpackers actually travel through, each with its own perks, bookable activities and free things to do.</p>
-  <div class="stops" id="stopgrid"></div>
+  <div class="stops" id="stopgrid" data-mrow></div>
 </div></section>
 
 <section class="sec why"><div class="w">
@@ -267,7 +293,7 @@ img{max-width:100%}
   <div class="eyebrow">Book in the app</div>
   <h2>Activities, instantly confirmed</h2>
   <p class="lead">Bookable from inside Perks. Your voucher, meeting point and start time come by email once you've paid.</p>
-  <div class="acts" id="actgrid"></div>
+  <div class="acts" id="actgrid" data-mrow></div>
 </div></section>
 
 <section class="sec" style="padding-top:0"><div class="w">
@@ -327,6 +353,22 @@ document.getElementById('actgrid').innerHTML=H.acts.map(a=>`<a class="ac" href="
 const cm=document.getElementById('cm');
 document.addEventListener('click',e=>{if(e.target.closest('[data-contact]')){cm.classList.add('on');document.getElementById('cmn').focus()} if(e.target.closest('[data-close]')||e.target===cm)cm.classList.remove('on')});
 document.getElementById('cmsend').onclick=()=>{const g=id=>document.getElementById(id).value.trim();location.href='mailto:info@ultimate.travel?subject='+encodeURIComponent('Traveller Perks: message from '+g('cmn'))+'&body='+encodeURIComponent(g('cmm')+'\n\n'+g('cmn')+'\n'+g('cme'));cm.classList.remove('on')};
+/* Mobile: one auto-scrolling, looping row per section; swipe works, touch pauses */
+(function(){
+ const mq=matchMedia('(max-width:720px)'); if(!mq.matches) return;
+ const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+ document.querySelectorAll('[data-mrow]').forEach((row,ri)=>{
+  row.classList.add('mrow');
+  const kids=[...row.children]; kids.forEach(k=>{const c=k.cloneNode(true);c.setAttribute('aria-hidden','true');c.querySelectorAll('a,button').forEach(a=>a.tabIndex=-1);if(c.tagName==='A')c.tabIndex=-1;row.appendChild(c)});
+  if(reduce) return;
+  let paused=false,t,pos=0; const speed=0.35+ri*0.04;
+  const pause=()=>{paused=true;clearTimeout(t);t=setTimeout(()=>{paused=false;pos=row.scrollLeft},2500)};
+  ['touchstart','pointerdown','wheel'].forEach(e=>row.addEventListener(e,pause,{passive:true}));
+  row.addEventListener('scroll',()=>{const half=row.scrollWidth/2; if(row.scrollLeft>=half){row.scrollLeft-=half;pos=row.scrollLeft} else if(row.scrollLeft<=0&&paused){row.scrollLeft+=half;pos=row.scrollLeft}},{passive:true});
+  const vis={on:false}; new IntersectionObserver(es=>vis.on=es[0].isIntersecting).observe(row);
+  (function step(){ if(!paused&&vis.on){pos+=speed; const half=row.scrollWidth/2; if(pos>=half)pos-=half; row.scrollLeft=pos} requestAnimationFrame(step)})();
+ });
+})();
 </script>
 </body>
 </html>
