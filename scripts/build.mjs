@@ -10,7 +10,7 @@ const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 const r = p => fs.readFileSync(path.join(root, p));
 const out = path.join(root, 'dist');
 fs.rmSync(out, { recursive: true, force: true });
-for (const d of ['', 'app', 'admin', 'venues', 'perkoffers', 'assets', 'assets/fonts']) fs.mkdirSync(path.join(out, d), { recursive: true });
+for (const d of ['', 'app', 'admin', 'venues', 'perkoffers', 'assets', 'assets/fonts', 'assets/social']) fs.mkdirSync(path.join(out, d), { recursive: true });
 
 const json = s => s.replace(/<\//g, '<\\/');
 const logo = r('assets/logo-white.png').toString('base64');
@@ -61,11 +61,14 @@ fs.copyFileSync(path.join(root, 'src/auth.js'), path.join(out, 'auth.js'));
 fs.writeFileSync(path.join(out, 'config.js'),
   `window.PERKS_CONFIG=${JSON.stringify({ supabaseUrl: process.env.SUPABASE_URL || '', supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '' })};\n`);
 fs.copyFileSync(path.join(root, 'assets/logo-white.png'), path.join(out, 'assets/logo-white.png'));
+for (const f of fs.readdirSync(path.join(root, 'assets/social'))) fs.copyFileSync(path.join(root, 'assets/social', f), path.join(out, 'assets/social', f));
+fs.writeFileSync(path.join(out, 'robots.txt'), 'User-agent: *\nDisallow: /admin/\nSitemap: https://perks.ultimate.travel/sitemap.xml\n');
+fs.writeFileSync(path.join(out, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + ['/', '/venues/', '/app/'].map(u => '<url><loc>https://perks.ultimate.travel' + u + '</loc></url>').join('') + '</urlset>\n');
 for (const f of fs.readdirSync(path.join(root, 'assets/fonts'))) fs.copyFileSync(path.join(root, 'assets/fonts', f), path.join(out, 'assets/fonts', f));
 fs.writeFileSync(path.join(out, 'app/manifest.webmanifest'), JSON.stringify({
   name: 'Traveller Perks', short_name: 'Perks', start_url: '/app/', scope: '/app/', display: 'standalone',
   background_color: '#4ECAC2', theme_color: '#4ECAC2',
-  icons: [{ src: '/assets/logo-white.png', sizes: '900x160', type: 'image/png' }],
+  icons: [{ src: '/assets/social/icon-192.png', sizes: '192x192', type: 'image/png' }, { src: '/assets/social/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }],
 }, null, 2));
 fs.writeFileSync(path.join(out, '404.html'), '<!doctype html><meta charset="utf-8"><title>Not found</title><p style="font-family:sans-serif">Page not found. <a href="/">Go to Traveller Perks</a></p>');
 const size = f => (fs.statSync(path.join(out, f)).size / 1024).toFixed(0) + ' KB';
