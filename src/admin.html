@@ -629,10 +629,10 @@ function aPage(){const st=DB.settings;
     const rows=S.team||[]; const vopts=[...DB.venues].sort((a,b)=>a.name.localeCompare(b.name)).map(v=>`<option value="${esc(v.id)}">${esc(v.name)} · ${esc(TOWN(v.town))}</option>`).join('');
     return`<div class="grid g2">
     <div class="card"><h2>Add someone</h2>
-      <label class="f">Email<input class="i" type="email" id="tm_e" placeholder="name@venue.com.au"></label>
+      <label class="f">Email<input class="i" type="email" id="tm_e" placeholder="name@ultimate.travel"></label>
       <label class="f">Name<input class="i" id="tm_n" placeholder="Optional"></label>
-      <label class="f">Access<select class="i" id="tm_r" onchange="document.getElementById('tm_vw').style.display=this.value==='venue'?'':'none'"><option value="admin">Admin: everything</option><option value="venue" selected>Venue owner: their venue only</option></select></label>
-      <label class="f" id="tm_vw">Venue<select class="i" id="tm_v">${vopts}</select></label>
+      <label class="f">Access<select class="i" id="tm_r" onchange="document.getElementById('tm_vw').style.display=this.value==='venue'?'':'none'"><option value="admin" selected>Admin: everything</option><option value="venue">Venue owner: their venue only</option></select></label>
+      <label class="f" id="tm_vw" style="display:none">Venue<select class="i" id="tm_v">${vopts}</select></label>
       <button class="btn" data-act="teamadd" style="align-self:flex-start">Give access</button>
       <div class="muted">If they already have an account, access starts straight away. If not, they get it the first time they sign in at perks.ultimate.travel/admin with this email.</div></div>
     <div class="card"><h2>How they sign in</h2><div>Send them to <b>perks.ultimate.travel/admin</b>. They type their email, click <b>Email me a sign-in link</b> and click the link in the email. No password to share.</div><div class="muted">Removing someone turns their account back into a normal traveller account straight away.</div></div>
