@@ -1054,10 +1054,13 @@ a{color:var(--mint-deep)}
 .tog.on{background:var(--mint-deep)}.tog.on::after{left:23px}
 .set-sel{font:inherit;font-size:14px;padding:8px 10px;border:1px solid #CFD0D1;border-radius:10px;color:var(--navy);background:#fff}
 .acct{background:var(--mint-mist);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px}
+/* // CSS NAME: perks-app-beta-lift // */
+:root{--beta-lift:76px}
 </style>
 <link rel="manifest" href="/app/manifest.webmanifest">
 <meta name="theme-color" content="#4ECAC2">
 <script src="/config.js"></script>
+<script src="/flags.js"></script>
 <script type="module" src="/auth.js"></script>
 <!-- Hero widget branch script: required once per page for Book Now to reach checkout -->
 <script src="https://hero.ultimate.travel/Api/apiV2.js"></script>
@@ -1076,6 +1079,15 @@ a{color:var(--mint-deep)}
 /* // DATA: perks pulled from ULTIMATE Crew Resources, customer-facing text only // */
 const DATA = __DATA__;
 (DATA.perks||[]).forEach(p=>{const b=(DATA.brands||[]).find(x=>x.id===p.brand);if(!b)return;if(p.photo==='@brand')p.photo=b.photo;if(p.logo==='@brand')p.logo=b.logo;if(p.photos)p.photos=p.photos.map(x=>x==='@brand'?b.photo:x)});
+// // Beta settings: prospects only show when admin > Settings allows it
+const ALL_PERKS=DATA.perks.slice(), ALL_BRANDS=(DATA.brands||[]).map(b=>({...b,locs:b.locs.slice()}));
+function applyVisibility(showProspects){
+  DATA.perks=showProspects?ALL_PERKS.slice():ALL_PERKS.filter(p=>!p.prospect);
+  const ids=new Set(DATA.perks.map(p=>p.id));
+  DATA.brands=ALL_BRANDS.map(b=>({...b,locs:showProspects?b.locs.slice():b.locs.filter(l=>l.perk&&ids.has(l.perk))})).filter(b=>b.locs.length&&(showProspects||!b.preview));
+}
+applyVisibility(!!(window.PERKS_SITE&&PERKS_SITE.loaded&&PERKS_SITE.showProspects));
+window.addEventListener('perks:site',e=>{applyVisibility(!!e.detail.showProspects); if(typeof render==='function') render();});
 const LOGO_WHITE = "data:image/png;base64,__LOGO__";
 
 /* ---------- icons ---------- */
@@ -1363,6 +1375,7 @@ const usedToday = (pid,oi) => !!S.used[`${todayKey()}|${pid}|${oi}|${S.user?S.us
 function hash(s){ let h=2166136261; for (let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
 function liveCode(){ const w=Math.floor(Date.now()/15000); const n=hash(`${S.user?.ref}|${S.perk}|${S.offer}|${w}`)%1000000; const s=String(n).padStart(6,'0'); return s.slice(0,3)+' '+s.slice(3); }
 function vVoucher(){
+  if(!perkById(S.perk)) return vList();
   const p=perkById(S.perk), o=p.offers[S.offer]||p.offers[0], used=usedToday(p.id,S.offer);
   if (S.rateFor===p.id && S.reviewsOn) return `<section class="voucher" style="justify-content:center">
     <div class="rate"><div class="used-badge" style="width:100%">${svg('check',18,'#4ECAC2',3)}PERK USED. ENJOY.</div>
@@ -1672,7 +1685,7 @@ function schemMap(id, pts, focus){
 }
 function mountMaps(){
   maps.forEach(m=>m.remove()); maps=[];
-  if (S.view==='detail'){ const p=perkById(S.perk); const near=DATA.perks.filter(x=>x.town===p.town&&Math.abs(x.lat-p.lat)<.02&&Math.abs(x.lon-p.lon)<.02); schemMap('vmap',near.length?near:[p],p.id);
+  if (S.view==='detail'&&perkById(S.perk)){ const p=perkById(S.perk); const near=DATA.perks.filter(x=>x.town===p.town&&Math.abs(x.lat-p.lat)<.02&&Math.abs(x.lon-p.lon)<.02); schemMap('vmap',near.length?near:[p],p.id);
     const el=document.getElementById('vmap'); if(el){ el.style.cursor='pointer'; el.onclick=e=>{ if(e.target.closest('[data-pid]')&&e.target.closest('[data-pid]').dataset.pid!==p.id) return; window.open('https://www.google.com/maps/dir/?api=1&destination='+p.lat+','+p.lon,'_blank','noopener'); }; } }
   if (S.view==='brand'){ const b=(DATA.brands||[]).find(x=>x.id===S.brand); if(b) makeMap('brandmap', b.locs.filter(l=>l.lat).map(l=>({...l,town:l.town}))); }
   if (S.view==='city') schemMap('citymap', DATA.perks.filter(p=>p.town===S.city));

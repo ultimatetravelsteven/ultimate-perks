@@ -35,8 +35,10 @@ const firstPhoto = p => [p.photo, ...(p.photos || [])].find(isUrl) || '';
 const perksWithPhoto = AD.perks.filter(p => firstPhoto(p) && p.offers && p.offers[0]);
 const byTown = {};
 for (const p of perksWithPhoto) (byTown[p.town] = byTown[p.town] || []).push(p);
-const sample = [];
-for (let i = 0; sample.length < 16 && i < 10; i++) for (const t of Object.keys(AD.towns)) { const p = (byTown[t] || [])[i]; if (p && sample.length < 16) sample.push(p); }
+const pickSample = (pool, n) => { const bt = {}; for (const p of pool) (bt[p.town] = bt[p.town] || []).push(p); const out = [];
+  for (let i = 0; out.length < n && i < 12; i++) for (const t of Object.keys(AD.towns)) { const p = (bt[t] || [])[i]; if (p && out.length < n) out.push(p); } return out; };
+const realSample = pickSample(perksWithPhoto.filter(p => !p.prospect), 16);
+const sample = [...realSample, ...pickSample(perksWithPhoto.filter(p => p.prospect), 16 - Math.min(16, realSample.length) + 8)];
 const pc = {}, ac = {};
 AD.perks.forEach(p => pc[p.town] = (pc[p.town] || 0) + 1);
 (AD.acts || []).forEach(a => ac[a.town] = (ac[a.town] || 0) + 1);
@@ -44,8 +46,8 @@ const actSample = [];
 const seenT = new Set();
 for (const a of (AD.acts || [])) { if (!isUrl(a.img) || seenT.has(a.town)) continue; seenT.add(a.town); actSample.push(a); if (actSample.length >= 8) break; }
 const HOME = {
-  counts: { perks: AD.perks.length, stops: Object.keys(AD.towns).length, acts: (AD.acts || []).length },
-  perks: sample.map(p => ({ id: p.id, name: p.name, cat: p.cat, townName: townName(p.town), offer: (p.offers[0].t || p.offer || '').replace(/\.$/, ''), photo: firstPhoto(p) })),
+  counts: { perks: AD.perks.filter(p => !p.prospect).length, perksAll: AD.perks.length, stops: Object.keys(AD.towns).length, acts: (AD.acts || []).length },
+  perks: sample.map(p => ({ id: p.id, prospect: !!p.prospect, name: p.name, cat: p.cat, townName: townName(p.town), offer: (p.offers[0].t || p.offer || '').replace(/\.$/, ''), photo: firstPhoto(p) })),
   towns: Object.entries(AD.towns).map(([id, t]) => ({ id, name: t.name.split(' / ')[0], photo: isUrl(t.photo) ? t.photo : '', alt: ((AD.acts || []).find(a => a.town === id && isUrl(a.img)) || {}).img || '', perks: pc[id] || 0, acts: ac[id] || 0 })),
   acts: actSample.map(a => ({ id: a.id, title: a.title, townName: townName(a.town), dur: a.dur || '', price: a.price ? String(Math.round(+a.price)) : '', img: a.img })),
   qr: r('assets/app-qr.svg').toString().replace(/^<\?xml[^>]*>\s*/, ''),
@@ -58,6 +60,7 @@ fs.writeFileSync(path.join(out, 'perkoffers/index.html'), venueSite);
 fs.writeFileSync(path.join(out, 'app/index.html'), fill('src/app.html', appData));
 fs.writeFileSync(path.join(out, 'admin/index.html'), fill('src/admin.html', adminData));
 fs.copyFileSync(path.join(root, 'src/auth.js'), path.join(out, 'auth.js'));
+fs.copyFileSync(path.join(root, 'src/flags.js'), path.join(out, 'flags.js'));
 fs.writeFileSync(path.join(out, 'config.js'),
   `window.PERKS_CONFIG=${JSON.stringify({ supabaseUrl: process.env.SUPABASE_URL || '', supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '' })};\n`);
 fs.copyFileSync(path.join(root, 'assets/logo-white.png'), path.join(out, 'assets/logo-white.png'));
