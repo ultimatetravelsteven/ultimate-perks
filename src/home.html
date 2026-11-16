@@ -351,6 +351,15 @@ const og=document.getElementById('offergrid'); og.innerHTML=list.map(p=>`<a clas
 if(og.classList.contains('mrow')){[...og.children].forEach(k=>{const c=k.cloneNode(true);c.setAttribute('aria-hidden','true');c.tabIndex=-1;og.appendChild(c)})}}
 drawPerks();
 window.addEventListener('perks:site',drawPerks);
+(function liveHome(){const cfg=window.PERKS_CONFIG||{};if(!cfg.supabaseUrl)return;
+  fetch(cfg.supabaseUrl+'/rest/v1/rpc/public_venues',{method:'POST',headers:{apikey:cfg.supabaseAnonKey,Authorization:'Bearer '+cfg.supabaseAnonKey,'Content-Type':'application/json'},body:'{}'})
+  .then(r=>r.ok?r.json():null).then(rows=>{if(!rows||!rows.length)return;
+    const tn=Object.fromEntries(H.towns.map(t=>[t.id,t.name]));const idOf=id=>{id=String(id);const m=id.match(/^P(\d+)$/);return m?1000+(+m[1]):id};
+    const withPhoto=rows.filter(v=>v.name&&tn[v.town]&&(v.photos||[]).some(p=>/^https?:/.test(p))&&(v.offers||[]).length);
+    const pick=pool=>{const bt={};pool.forEach(v=>(bt[v.town]=bt[v.town]||[]).push(v));const out=[];for(let i=0;out.length<16&&i<12;i++)for(const t of H.towns.map(x=>x.id)){const v=(bt[t]||[])[i];if(v&&out.length<16)out.push(v)}return out};
+    const map=v=>({id:idOf(v.id),prospect:v.status==='prospect',name:v.name,cat:v.cat||'',townName:tn[v.town],offer:String(v.offers[0].t||'').replace(/\.$/,''),photo:(v.photos||[]).find(p=>/^https?:/.test(p))});
+    const real=pick(withPhoto.filter(v=>v.status==='live')),pros=pick(withPhoto.filter(v=>v.status==='prospect'));
+    H.perks=[...real,...pros].map(map);H.counts.perks=rows.filter(v=>v.status==='live').length;H.counts.perksAll=rows.length;drawPerks();}).catch(()=>{});})();
 document.getElementById('stopgrid').innerHTML=H.towns.map(t=>`<a class="stop" href="/app/#city-${esc(t.id)}"><img src="${esc(t.photo||t.alt)}" alt="${esc(t.name)}" loading="lazy" data-alt="${esc(t.alt||'')}" onerror="if(this.dataset.alt&&this.src!==this.dataset.alt){this.src=this.dataset.alt}else{this.remove()}"><span class="t"><b>${esc(t.name)}</b></span></a>`).join('');
 document.getElementById('actgrid').innerHTML=H.acts.map(a=>`<a class="ac" href="/app/#act-${esc(a.id)}"><div class="im">${ph(a.img,a.title)}<span class="inst">Instant confirmation</span></div><div class="bd"><b>${esc(a.title)}</b><small>${esc(a.townName)}${a.dur?' · '+esc(a.dur):''}</small><br>${a.price?`<span class="pr">From $${esc(a.price)}</span>`:''}</div></a>`).join('');
 /* QR via inline generator is heavy; use a simple link-styled fallback */

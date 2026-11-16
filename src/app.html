@@ -1080,7 +1080,8 @@ a{color:var(--mint-deep)}
 const DATA = __DATA__;
 (DATA.perks||[]).forEach(p=>{const b=(DATA.brands||[]).find(x=>x.id===p.brand);if(!b)return;if(p.photo==='@brand')p.photo=b.photo;if(p.logo==='@brand')p.logo=b.logo;if(p.photos)p.photos=p.photos.map(x=>x==='@brand'?b.photo:x)});
 // // Beta settings: prospects only show when admin > Settings allows it
-const ALL_PERKS=DATA.perks.slice(), ALL_BRANDS=(DATA.brands||[]).map(b=>({...b,locs:b.locs.slice()}));
+const BAKED_BRANDS=(DATA.brands||[]).slice();
+let ALL_PERKS=DATA.perks.slice(), ALL_BRANDS=BAKED_BRANDS.map(b=>({...b,locs:b.locs.slice()}));
 function applyVisibility(showProspects){
   DATA.perks=showProspects?ALL_PERKS.slice():ALL_PERKS.filter(p=>!p.prospect);
   const ids=new Set(DATA.perks.map(p=>p.id));
@@ -1088,6 +1089,20 @@ function applyVisibility(showProspects){
 }
 applyVisibility(!!(window.PERKS_SITE&&PERKS_SITE.loaded&&PERKS_SITE.showProspects));
 window.addEventListener('perks:site',e=>{applyVisibility(!!e.detail.showProspects); if(typeof render==='function') render();});
+// // Live venues: when the shared database has venues, they replace the built-in list
+function appIdOf(id){id=String(id);if(/^\d+$/.test(id))return +id;const m=id.match(/^P(\d+)$/);if(m)return 1000+(+m[1]);let h=5381;for(const ch of id)h=((h*33)^ch.charCodeAt(0))>>>0;return 5000000+(h%4000000)}
+function perkFromVenue(v){const hrs=[];Object.entries(v.hours||{}).forEach(([d,oc])=>{if(oc&&oc[0])hrs.push([[+d],oc[0],oc[1]])});
+  const offers=(v.offers||[]).filter(o=>o&&o.t).map(o=>({t:o.t,...(o.when?{when:o.when}:{})}));const photos=(v.photos||[]).filter(Boolean);
+  return {id:appIdOf(v.id),town:v.town,cat:v.cat||'Bar',name:v.name||'',offer:(offers[0]||{}).t||'',terms:((v.offers||[])[0]||{}).terms||'Show the app to redeem.',lat:+v.lat||0,lon:+v.lon||0,
+    photo:photos[0]||'',photos,logo:v.logo||'',addr:v.addr||'',hours:hrs.length?hrs:[[[0,1,2,3,4,5,6],'10:00','22:00']],sampleHours:!v.hoursReal,offers:offers.length?offers:[{t:'Show the app for your perk'}],
+    ...(v.status==='prospect'?{prospect:true}:{}),...(v.brandId?{brand:v.brandId}:{}),...(v.web?{web:v.web}:{}),featuredUntil:v.featuredUntil||0};}
+(function liveVenues(){const cfg=window.PERKS_CONFIG||{};if(!cfg.supabaseUrl||!cfg.supabaseAnonKey)return;
+  fetch(cfg.supabaseUrl+'/rest/v1/rpc/public_venues',{method:'POST',headers:{apikey:cfg.supabaseAnonKey,Authorization:'Bearer '+cfg.supabaseAnonKey,'Content-Type':'application/json'},body:'{}'})
+  .then(r=>r.ok?r.json():null).then(rows=>{if(!rows||!rows.length)return;const vs=rows.filter(v=>v&&v.town&&DATA.towns[v.town]&&v.name);if(!vs.length)return;
+    ALL_PERKS=vs.map(perkFromVenue);const byBrand={};ALL_PERKS.forEach(p=>{if(p.brand)(byBrand[p.brand]=byBrand[p.brand]||[]).push(p)});
+    ALL_BRANDS=BAKED_BRANDS.map(b=>({...b,locs:(byBrand[b.id]||[]).map(p=>({name:p.name,town:p.town,addr:p.addr,lat:p.lat,lon:p.lon,perk:p.id}))})).filter(b=>b.locs.length).map(b=>({...b,preview:b.locs.every(l=>(ALL_PERKS.find(p=>p.id===l.perk)||{}).prospect)}));
+    const fe=ALL_PERKS.filter(p=>p.featuredUntil>Date.now()).map(p=>p.id);if(fe.length)DATA.featured=fe;
+    applyVisibility(!!(window.PERKS_SITE&&PERKS_SITE.showProspects));if(typeof render==='function')render();}).catch(()=>{});})();
 const LOGO_WHITE = "data:image/png;base64,__LOGO__";
 
 /* ---------- icons ---------- */

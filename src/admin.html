@@ -291,7 +291,39 @@ try{const su=JSON.parse(localStorage.getItem('perksSignup')||'null');if(su){cons
     emails:{profile:true,monthly:true,stats:true},notes:'Signed up on the website',joined:su.paidAt,stats:{views:0,saves:0,uses:0,months:[0,0,0,0,0,0]}});
     DB.tx.unshift({id:su.promo?'PROMO':'EW'+Math.floor(10240000+Math.random()*9e4),date:su.paidAt,vid:id,type:su.promo?`Listing, ${su.promoMonths} months free (${su.promo})`:'Annual listing',amount:su.promo?0:299,status:'Approved',method:su.method||'No charge'});if(su.promo){const pc=DB.settings.promos.find(c=>c.code===su.promo);if(pc)pc.uses++}DB.log.unshift({t:su.paidAt,a:'New venue signed up: '+su.name});}
   localStorage.removeItem('perksSignup');store.set(DB);if(/new=1/.test(location.search)||window.__perksNew||(window.parent!==window&&window.parent.__perksNew)){S.role='venue';S.venueId=id}}}catch(e){}
-const save=()=>store.set(DB);
+// // Live: venues and brands are saved to the shared database (Supabase); everything else stays local for now
+const LIVE={on:false,snapV:{},snapB:{},t:null,busy:false};
+function liveSnap(){LIVE.snapV=Object.fromEntries(DB.venues.map(v=>[v.id,JSON.stringify(v)]));LIVE.snapB=Object.fromEntries((DB.brands||[]).map(b=>[b.id,JSON.stringify(b)]))}
+function liveSync(){if(!LIVE.on)return;clearTimeout(LIVE.t);LIVE.t=setTimeout(async()=>{const c=PerksAuth.client,admin=S.role==='admin',now=new Date().toISOString(),uid=PerksAuth.user&&PerksAuth.user.id;
+  const cur=new Set(DB.venues.map(v=>v.id)),up=DB.venues.filter(v=>LIVE.snapV[v.id]!==JSON.stringify(v)),del=Object.keys(LIVE.snapV).filter(id=>!cur.has(id));
+  const bcur=new Set((DB.brands||[]).map(b=>b.id)),bup=(DB.brands||[]).filter(b=>LIVE.snapB[b.id]!==JSON.stringify(b)),bdel=Object.keys(LIVE.snapB).filter(id=>!bcur.has(id));
+  if(!up.length&&!del.length&&!bup.length&&!bdel.length)return;
+  const row=v=>({id:v.id,status:v.status,town:v.town,data:v,updated_at:now,updated_by:uid});let err=null;
+  try{
+    if(admin){
+      if(up.length){const r=await c.from('perk_venues').upsert(up.map(row));if(r.error)err=r.error}
+      if(!err&&del.length){const r=await c.from('perk_venues').delete().in('id',del);if(r.error)err=r.error}
+      if(!err&&bup.length){const r=await c.from('perk_brands').upsert(bup.map(b=>({id:b.id,data:b,updated_at:now})));if(r.error)err=r.error}
+      if(!err&&bdel.length){const r=await c.from('perk_brands').delete().in('id',bdel);if(r.error)err=r.error}
+    }else{for(const v of up){const r=await c.from('perk_venues').update({data:v,town:v.town,updated_at:now,updated_by:uid}).eq('id',v.id);if(r.error){err=r.error;break}}}
+  }catch(e){err=e}
+  if(err){toast('Not saved: '+(err.message||err));return}
+  liveSnap();},400)}
+async function liveLoad(){const c=PerksAuth.client;const [v,b]=await Promise.all([c.from('perk_venues').select('id,status,data'),c.from('perk_brands').select('id,data')]);
+  if(v.error){toast('Could not load venues: '+v.error.message);return}
+  if(!v.data.length){S.needSeed=S.role==='admin';LIVE.on=false;render();return}
+  DB.venues=v.data.map(r=>Object.assign({},r.data,{id:r.id,status:r.status}));DB.brands=(b.data||[]).map(r=>Object.assign({},r.data,{id:r.id}));
+  store.set(DB);liveSnap();LIVE.on=true;S.needSeed=false;render()}
+async function liveSeed(){const fresh=seedData(),Y=365*864e5,now=Date.now();const real=new Map(D.perks.map(p=>[String(p.id),p]));
+  const venues=fresh.venues.map(v=>{if(v.status==='prospect')return v;const p=real.get(String(v.id))||{};const hours={};(p.hours||[]).forEach(([ds,o,c])=>ds.forEach(d=>hours[d]=[o,c]));
+    return Object.assign(v,{status:'live',logo:p.logo||'',photos:(p.photos&&p.photos.length?p.photos:[p.photo]).filter(Boolean),desc:'',phone:'',web:'',insta:'',hours,hoursReal:!p.sampleHours,
+      contact:{n:'',e:''},card:null,autoRenew:false,expires:now+Y,featuredUntil:(D.featured||[]).includes(+v.id)?now+30*864e5:0,booking:{mode:'',url:'',code:'',provider:''},
+      bstats:{taps:0,opens:0,bookings:0,value:0},stats:{views:0,saves:0,uses:0,months:[0,0,0,0,0,0]},notes:'',joined:now,created:now})});
+  const c=PerksAuth.client,uid=PerksAuth.user.id,ts=new Date().toISOString();
+  for(let i=0;i<venues.length;i+=40){const r=await c.from('perk_venues').upsert(venues.slice(i,i+40).map(v=>({id:v.id,status:v.status,town:v.town,data:v,updated_at:ts,updated_by:uid})));if(r.error){toast('Setup stopped: '+r.error.message);return}}
+  const br=(fresh.brands||[]);if(br.length){const r=await c.from('perk_brands').upsert(br.map(b=>({id:b.id,data:b,updated_at:ts})));if(r.error){toast('Brands not saved: '+r.error.message)}}
+  toast('Live venues set up');await liveLoad()}
+function save(){store.set(DB);liveSync()}
 const logA=a=>{DB.log.unshift({t:Date.now(),a});DB.log=DB.log.slice(0,60);save();};
 const V=id=>DB.venues.find(v=>v.id===id);
 const B=id=>(DB.brands||[]).find(b=>b.id===id);
@@ -513,7 +545,7 @@ function aPage(){const st=DB.settings;
     const exp30=DB.venues.filter(v=>!['draft','prospect'].includes(v.status)&&daysTo(v.expires)<=30).sort((a,b)=>a.expires-b.expires);
     const inc=DB.venues.filter(v=>v.status!=='prospect'&&comp(v).pct<100);
     const pv=DB.venues.filter(v=>v.status==='pending'),pp=DB.pushes.filter(p=>p.status==='Awaiting approval');
-    return`<div class="grid g6">
+    return`${S.needSeed?`<div class="card" style="border-color:#00ADBC;margin-bottom:16px"><h2>Set up live venues</h2><div>The shared database has no venues yet. This loads your ${D.perks.length} real venues as <b>live</b> and your ${(D.prospects||[]).length} prospects as <b>prospects</b> (hidden from travellers while Show prospects is off). Made-up test details like sample phone numbers, contacts and card details are left out.</div><button class="btn" data-act="liveseed" style="align-self:flex-start">Set up live venues</button></div>`:''}${LIVE.on?'':''}<div class="grid g6">
       <div class="kpi"><span>Revenue this month</span><b>${money(mth)}</b></div>
       <div class="kpi"><span>Live venues</span><b>${DB.venues.filter(v=>v.status==='live').length}</b><i>of ${DB.venues.length}</i></div>
       <div class="kpi"><span>Expiring ≤ 30 days</span><b>${exp30.length}</b></div>
@@ -793,8 +825,9 @@ const act={
     if(!(window.PerksAuth&&PerksAuth.live))return toast('Team access works on the live site');
     PerksAuth.client.rpc('grant_team_access',{p_email:e,p_role:r,p_name:n||null,p_venue_ref:vid,p_venue_name:vn}).then(({data,error})=>{if(error)return toast(error.message);toast(data==='active'?'Access given. They can sign in now':'Saved. They get access the first time they sign in');S.teamLoaded=false;render()})},
   teamdel:d=>{modal(`<h2>Remove access?</h2><div>${esc(d.e)} will go back to a normal traveller account straight away.</div><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="tdgo">Remove access</button></div>`);$('#tdgo').onclick=()=>PerksAuth.client.rpc('revoke_team_access',{p_email:d.e}).then(({error})=>{closeModal();if(error)return toast(error.message);toast('Access removed');S.teamLoaded=false;render()})},
+  liveseed:()=>confirmBox('Set up live venues?','Loads your real venues and prospects into the shared database. You only need to do this once.','Set up',()=>liveSeed()),
   addadmin:()=>{modal(`<h2>Add admin</h2><label class="f">Name<input class="i" id="an"></label><label class="f">Email<input class="i" id="ae" type="email"></label><label class="f">Role<select class="i" id="ar"><option>Admin</option><option>Support</option></select></label><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-act="close">Cancel</button><button class="btn" id="ago">Send invite</button></div>`);$('#ago').onclick=()=>{if(!$('#an').value)return;DB.settings.admins.push({n:$('#an').value,e:$('#ae').value,role:$('#ar').value});save();closeModal();render()}},
-  resetdemo:()=>confirmBox('Reset test data?','Puts all venues, members and payments back to the starting sample.','Reset',()=>{DB=seedData();save();render()},true),
+  resetdemo:()=>LIVE.on?toast('Not available on the live site: venues are real now'):confirmBox('Reset test data?','Puts all venues, members and payments back to the starting sample.','Reset',()=>{DB=seedData();save();render()},true),
   csvvenues:()=>csv('perks-venues.csv',[['Venue','Brand','Town','Category','Status','Profile %','Missing','Listing ends','Days left','Auto-renew','Card','Featured until','Views','Saves','Used this month','Contact','Email'],...DB.venues.map(v=>{const c=comp(v);return[v.name,B(v.brandId)?.name||'',TOWN(v.town),v.cat,v.status,c.pct,c.missing.map(i=>i.k).join(' '),fmt(v.expires),daysTo(v.expires),v.autoRenew?'Yes':'No',v.card?`${v.card.brand} ${v.card.last4}`:'None',v.featuredUntil?fmt(v.featuredUntil):'',v.stats.views,v.stats.saves,v.stats.uses,v.contact.n,v.contact.e]})]),
   csvexp:()=>csv('perks-expiries.csv',[['Venue','Town','Email','Listing ends','Days left','Renewal','Featured ends','Last push'],...DB.venues.filter(v=>v.status!=='draft').sort((a,b)=>a.expires-b.expires).map(v=>{const lp=DB.pushes.filter(p=>p.vid===v.id).sort((a,b)=>b.when-a.when)[0];return[v.name,TOWN(v.town),v.contact.e,fmt(v.expires),daysTo(v.expires),v.card&&v.autoRenew?'Auto':'Manual',v.featuredUntil?fmt(v.featuredUntil):'',lp?fmt(lp.when):'']})]),
   csvadv:()=>csv('perks-upsell-list.csv',[['Venue','Town','Profile %','Views','Used','Rate %','Featured now','Ever pushed','Email'],...DB.venues.filter(v=>v.status==='live').map(v=>[v.name,TOWN(v.town),comp(v).pct,v.stats.views,v.stats.uses,(v.stats.views?v.stats.uses/v.stats.views*100:0).toFixed(1),v.featuredUntil>NOW?'Yes':'No',DB.pushes.some(p=>p.vid===v.id)?'Yes':'No',v.contact.e])]),
@@ -837,7 +870,7 @@ render();
 window.addEventListener('perksauth:ready',()=>{ if(!window.PerksAuth||!PerksAuth.live) return; render();
   PerksAuth.onChange((u,prof)=>{ if(!u){ if(S.role){S.role=null;render()} return; }
     if(!prof||!prof.role||prof.role==='traveller'){ toast('This account is not set up as a venue or admin yet'); return; }
-    S.role=prof.role==='admin'?'admin':'venue'; if(prof.venue_ref||prof.venue_id) S.venueId=prof.venue_ref||prof.venue_id; S.page='dash'; render(); });
+    S.role=prof.role==='admin'?'admin':'venue'; if(prof.venue_ref||prof.venue_id) S.venueId=prof.venue_ref||prof.venue_id; S.page='dash'; render(); if(!LIVE.on) liveLoad(); });
 });
 </script>
 </body>
