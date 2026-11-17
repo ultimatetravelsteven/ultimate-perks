@@ -1,9 +1,9 @@
-// Traveller Perks site settings (beta flag, show prospects).
+// Traveller Perks site settings (beta flag, show prospects, free listing promo).
 // Reads the public "site" row from Supabase settings. Admins change it in admin > Settings.
 // Safe default if anything fails: no prospects shown, beta flag shown.
 (function () {
   const cfg = window.PERKS_CONFIG || {};
-  const DEF = { beta: true, showProspects: false };
+  const DEF = { beta: true, showProspects: false, freePromo: true };
   window.PERKS_SITE = Object.assign({}, DEF, { loaded: false });
 
   function flag(on) {

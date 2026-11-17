@@ -183,6 +183,28 @@ footer a{color:#fff}
 #join .drop{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.7);color:#fff}
 #join .thumbs img{border-color:#fff}
 #join a{color:#fff}
+section[id]{scroll-margin-top:84px}
+/* // CSS NAME: site-join-error // */
+#join .err{background:#fff;border:2px solid #fff;color:#123B4A;font-weight:700}
+/* // CSS NAME: site-join-price // */
+.joingrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;align-items:start}
+.pricebox{position:sticky;top:96px;background:#fff;color:#123B4A;border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:0 12px 32px rgba(18,59,74,.22)}
+#join .pricebox p,#join .pricebox label.f{color:#123B4A}
+.pricebox .pl{font-weight:800;font-size:17px}
+.pricebox .amt{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.pricebox .now{font-family:'Work Sans',sans-serif;font-weight:900;font-size:56px;line-height:1;color:#123B4A}
+.pricebox .was{font-weight:800;font-size:24px;color:#8A9AA0;text-decoration:line-through}
+.pricebox .per{font-weight:700;font-size:16px;color:#43484A}
+.pricebox .cta{background:#FF775E;color:#fff;border-radius:14px;padding:12px 14px;font-weight:800;font-size:17px;line-height:1.35}
+.pricebox .cta b{font-weight:900;letter-spacing:.04em}
+.pricebox .ok{background:#4ECAC2;color:#fff;border-radius:14px;padding:12px 14px;font-weight:800;font-size:17px}
+.pricebox .pc{display:flex;gap:8px}
+.pricebox .pc .i{flex:1;min-width:0;border:2px solid #CFE0E3;text-transform:uppercase;font-weight:800}
+#join .pricebox .pc .i{border-color:#CFE0E3}
+.pricebox .pc .btn{white-space:nowrap}
+.pricebox .pmsg{font-size:15px;font-weight:700;color:#123B4A;display:none}
+.pricebox ul{margin:0;padding-left:20px;font-size:15px;line-height:1.6;color:#43484A}
+@media(max-width:900px){.joingrid{grid-template-columns:1fr}.pricebox{position:static;order:-1}}
 </style>
 </head>
 <body>
@@ -285,7 +307,7 @@ footer a{color:#fff}
 <section id="join"><div class="w">
   <div class="eyebrow">Get listed</div><h2>List your venue</h2>
   <div class="steps" id="steps"><span class="on">1 · Your venue</span><span>2 · Logo + photos</span><span>3 · First offer</span><span>4 · Pay</span></div>
-  <form class="form" id="f" novalidate></form>
+  <div class="joingrid"><form class="form" id="f" novalidate></form><aside class="pricebox" id="pricebox" aria-live="polite"></aside></div>
 </div></section>
 
 <section class="alt" id="faq"><div class="w">
@@ -310,11 +332,25 @@ footer a{color:#fff}
 const D=__DATA__;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const luhn=n=>{n=n.replace(/\D/g,'');let s=0,a=false;for(let i=n.length-1;i>=0;i--){let d=+n[i];if(a){d*=2;if(d>9)d-=9}s+=d;a=!a}return n.length>=13&&s%10===0};
-const PROMOS=()=>{try{const d=JSON.parse(localStorage.getItem('perksPortal_v2')||'null');if(d&&d.settings&&d.settings.promos)return d.settings.promos}catch(e){}return[{code:'PERKS6FREE',months:6,active:true}]};
+const PROMO_ON=()=>!(window.PERKS_SITE&&window.PERKS_SITE.freePromo===false);
+const PROMOS=()=>{let l=[{code:'PERKS6FREE',months:6,active:true}];try{const d=JSON.parse(localStorage.getItem('perksPortal_v2')||'null');if(d&&d.settings&&d.settings.promos)l=d.settings.promos}catch(e){}return l.filter(x=>x.code!=='ULTIMATE').concat(PROMO_ON()?[{code:'ULTIMATE',months:12,active:true}]:[])};
+function applyPromo(raw){const c=String(raw||'').trim().toUpperCase();const hit=PROMOS().find(x=>x.code===c&&x.active);if(!hit)return false;F.promo=c;F.promoMonths=hit.months;return true}
+function drawPrice(msg){const el=document.getElementById('pricebox');if(!el)return;if(F.promo&&!PROMOS().some(x=>x.code===F.promo&&x.active))F.promo='';
+  const free=!!F.promo;
+  el.innerHTML=`<div class="pl">Annual listing</div>
+    <div class="amt">${free?'<span class="was">$299</span><span class="now">$0</span>':'<span class="now">$299</span>'}<span class="per">${free?`for ${F.promoMonths} months`:'for 12 months, incl. GST'}</span></div>
+    ${free?`<div class="ok">Code ${esc(F.promo)} applied. Your listing is free.</div>`:PROMO_ON()?'<div class="cta">Use promo code <b>ULTIMATE</b> to get a free listing</div>':''}
+    ${PROMO_ON()||free?`<div class="pc"><label class="sr" for="pcode" style="position:absolute;left:-9999px">Promo code</label><input class="i" id="pcode" placeholder="Promo code" value="${esc(F.promo||'')}" ${free?'disabled':''}><button class="btn" type="button" id="pcgo">${free?'Remove':'Apply'}</button></div><div class="pmsg" id="pmsg" role="alert"></div>`:''}
+    <ul><li>Up to 3 offers, changed any time</li><li>Logo, photos and opening hours</li><li>Shown to travellers in your town</li></ul>`;
+  const go=document.getElementById('pcgo');if(go)go.onclick=()=>{if(F.promo){F.promo='';draw();return}if(applyPromo(document.getElementById('pcode').value)){draw()}else{const m=document.getElementById('pmsg');m.textContent='That code is not valid. Check the spelling and try again.';m.style.display='block'}};
+  const pi=document.getElementById('pcode');if(pi)pi.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go.click()}};
+}
+window.addEventListener('perks:site',()=>draw());
 const F={step:1,name:'',town:'sydney',cat:'Bar',addr:'',contact:'',email:'',phone:'',logo:'',photos:[],offer:'',terms:''};
 const f=document.getElementById('f');
 function shrink(file,max,cb,type){const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL(type,.82))};im.src=r.result};r.readAsDataURL(file)}
 function draw(){
+  drawPrice();
   document.querySelectorAll('#steps span').forEach((s,i)=>s.classList.toggle('on',i<F.step));
   const err='<div class="err" id="err" role="alert"></div>';
   if(F.step===1)f.innerHTML=`<label class="f">Venue name<input class="i" id="name" value="${esc(F.name)}" autocomplete="organization"></label>
@@ -337,19 +373,19 @@ function draw(){
     <div id="blnk" style="display:${F.bmode==='link'?'block':'none'}"><label class="f">Booking page<input class="i" id="burl" value="${esc(F.burl||'')}" placeholder="https://yoursite.com.au/book"></label></div>`:''}
     <p class="small" style="margin:0">You can add more offers, days and times in your portal later.</p>${err}
     <div style="display:flex;gap:10px"><button class="btn ghost" type="button" id="back">Back</button><button class="btn" type="submit">Next: pay</button></div>`;
-  if(F.step===4)f.innerHTML=`<div class="card" style="padding:16px">${F.promo?`<b>Free listing, ${F.promoMonths} months</b> (code ${esc(F.promo)})<br>${esc(F.name)} · $0.00 today. Renews at $299 for 12 months after that, unless you turn auto-renew off.`:`<b>Annual listing, 12 months</b><br>${esc(F.name)} · $299.00 incl. GST ($27.18)`}</div>
+  if(F.step===4)f.innerHTML=`<div class="card" style="padding:16px">${F.promo?`<b>Free listing, ${F.promoMonths} months</b> (code ${esc(F.promo)})<br>${esc(F.name)} · $0.00 today. After that it's $299 a year if you choose to renew.`:`<b>Annual listing, 12 months</b><br>${esc(F.name)} · $299.00 incl. GST ($27.18)`}</div>
     <div style="display:flex;gap:10px;align-items:flex-end"><label class="f" style="flex:1">Promo code<input class="i" id="promo" value="${esc(F.promo||'')}" style="text-transform:uppercase"></label><button class="btn ghost" type="button" id="applyp">${F.promo?'Remove':'Apply'}</button></div>
-    <label class="f">Name on card<input class="i" id="cn" value="${esc(F.contact)}" autocomplete="cc-name"></label>
+    ${F.promo?`<p style="margin:0">No card needed today. We'll email you before your free listing ends so you can choose to renew.</p>`:`<label class="f">Name on card<input class="i" id="cn" value="${esc(F.contact)}" autocomplete="cc-name"></label>
     <label class="f">Card number<input class="i" id="cc" inputmode="numeric" autocomplete="cc-number" placeholder="4444 3333 2222 1111"></label>
     <div class="two"><label class="f">Expiry<input class="i" id="ce" placeholder="MM/YY" autocomplete="cc-exp"></label><label class="f">CVN<input class="i" id="cv" inputmode="numeric" autocomplete="cc-csc"></label></div>
     <label style="display:flex;gap:10px;align-items:center;font-size:15px"><input type="checkbox" id="ar" checked> Save my card with eWay and renew each year</label>
-    <p class="small" style="margin:0">In the live site these card fields are eWay Secure Fields, hosted by eWay. Test version: use 4444 3333 2222 1111, any future expiry and any CVN. Nothing is charged. Test promo code: PERKS6FREE.</p>${err}
+    <p class="small" style="margin:0">In the live site these card fields are eWay Secure Fields, hosted by eWay. Test version: use 4444 3333 2222 1111, any future expiry and any CVN. Nothing is charged.</p>`}${err}
     <div style="display:flex;gap:10px"><button class="btn ghost" type="button" id="back">Back</button><button class="btn" type="submit" id="pay">${F.promo?'Start my free listing':'Pay $299 and submit'}</button></div>`;
   if(F.step===5)f.innerHTML=`<div class="card"><h3>You're in</h3><p>We've got ${esc(F.name)}${F.promo?` on a free ${F.promoMonths}-month listing`:''}. We check every new venue, usually within one business day, and email ${esc(F.email)} when you're live.</p><p style="margin-top:14px"><a class="btn" href="portal.html?new=1">Open my venue portal</a></p></div>`;
   const b=document.getElementById('back');if(b)b.onclick=()=>{F.step--;draw()};
   const lg=document.getElementById('logo');if(lg)lg.onchange=e=>e.target.files[0]&&shrink(e.target.files[0],400,u=>{F.logo=u;draw()},'image/png');
   const bm=document.getElementById('bmode');if(bm)bm.onchange=e=>{F.bmode=e.target.value;document.getElementById('bwid').style.display=F.bmode==='widget'?'block':'none';document.getElementById('blnk').style.display=F.bmode==='link'?'block':'none'};
-  const ap=document.getElementById('applyp');if(ap)ap.onclick=()=>{if(F.promo){F.promo='';draw();return}const c=document.getElementById('promo').value.trim().toUpperCase();const hit=PROMOS().find(x=>x.code===c&&x.active);if(!hit)return bad('That code isn\'t valid. Check it, or chat to sales.');F.promo=c;F.promoMonths=hit.months;draw()};
+  const ap=document.getElementById('applyp');if(ap)ap.onclick=()=>{if(F.promo){F.promo='';draw();return}if(!applyPromo(document.getElementById('promo').value))return bad('That code isn\'t valid. Check it, or chat to sales.');draw()};
   const ph=document.getElementById('photos');if(ph)ph.onchange=e=>[...e.target.files].slice(0,8-F.photos.length).forEach(fl=>shrink(fl,1000,u=>{F.photos.push(u);draw()},'image/jpeg'));
 }
 const bad=m=>{const e=document.getElementById('err');e.textContent=m;e.style.display='block';e.focus&&e.scrollIntoView({block:'center',behavior:'smooth'})};
@@ -360,6 +396,7 @@ f.onsubmit=e=>{e.preventDefault();
   if(F.step===3){F.offer=v('offer');F.terms=v('terms');if(!F.offer)return bad('Add your offer.');
     if(F.cat==='Activity'&&F.bmode==='widget'){F.bcode=v('bcode');if(!/<(script|iframe|a|div)/i.test(F.bcode))return bad('Paste the full embed code from your booking system.')}
     if(F.cat==='Activity'&&F.bmode==='link'){F.burl=v('burl');if(!/^https?:\/\/\S+\.\S+/.test(F.burl))return bad('Add the full link, starting with https://')}}
+  if(F.step===4&&F.promo){const btn=document.getElementById('pay');btn.textContent='Processing…';btn.disabled=true;setTimeout(()=>{try{localStorage.setItem('perksSignup',JSON.stringify({...F,card:null,autoRenew:false,paidAt:Date.now(),method:'Free listing, code '+F.promo}))}catch(x){}F.step=5;draw()},600);return}
   if(F.step===4){const n=v('cc').replace(/\s/g,'');if(!luhn(n))return bad('That card number doesn\'t look right.');if(!/^(0[1-9]|1[0-2])\/\d{2}$/.test(v('ce')))return bad('Expiry should look like 08/28.');if(!/^\d{3,4}$/.test(v('cv')))return bad('CVN is the 3 or 4 digits on the back.');
     const btn=document.getElementById('pay');btn.textContent='Processing…';btn.disabled=true;
     const card=document.getElementById('ar').checked?{brand:n[0]==='5'?'Mastercard':'Visa',last4:n.slice(-4),exp:v('ce'),token:'9'+String(Math.floor(Math.random()*1e11)).padStart(11,'0')}:null;
