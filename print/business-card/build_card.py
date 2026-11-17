@@ -11,8 +11,8 @@ def qr_svg(url, color='#123B4A'):
     rects = ''.join(f'<rect x="{x}" y="{y}" width="1.02" height="1.02"/>' for y, row in enumerate(m) for x, v in enumerate(row) if v)
     return f'<svg viewBox="0 0 {n} {n}" shape-rendering="crispEdges"><g fill="{color}">{rects}</g></svg>'
 
-SEE = qr_svg('https://perks.ultimate.travel')
-LIST = qr_svg('https://perks.ultimate.travel/venues/#join')
+SEE = qr_svg('https://perks.ultimate.travel', '#FFFFFF')
+LIST = qr_svg('https://perks.ultimate.travel/venues/#join', '#FFFFFF')
 
 PERKS = '''<svg class="pk" viewBox="0 0 460 112" role="img" aria-label="PERKS"><g font-family="Work Sans" font-weight="900" font-size="130" text-anchor="middle">
 <text x="239" y="109" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text>
@@ -42,15 +42,17 @@ html,body{{font-family:'Work Sans',Arial,sans-serif;color:#fff;-webkit-print-col
 .front .dots{{position:absolute;right:-3mm;bottom:-3mm;width:30mm;height:30mm;border-radius:50%;background:#00ADBC}}
 .front .dots b{{position:absolute;left:8.5mm;top:9mm;font-weight:900;font-size:13pt;line-height:.95;text-transform:uppercase;text-align:left}}
 /* // CSS NAME: card-back // */
-.back{{background:#00ADBC}}
-.back .grid{{position:absolute;inset:0;display:grid;grid-template-columns:34mm 1fr;gap:4mm;align-items:center}}
-.back h2{{font-weight:900;font-size:10.5pt;line-height:1.02;text-transform:uppercase;text-shadow:.35mm .35mm 0 #123B4A}}
-.back .pill{{display:inline-block;margin-top:3mm;background:#FF775E;color:#fff;font-weight:900;font-size:7.2pt;line-height:1.15;border-radius:2.4mm;padding:1.6mm 2.2mm;text-transform:uppercase}}
-.back .url{{margin-top:2.6mm;font-weight:700;font-size:7.5pt}}
-.back .qrs{{display:flex;gap:2.6mm;justify-content:flex-end}}
-.back .tile{{background:#fff;border-radius:2.6mm;padding:2.5mm 2.5mm 1.8mm;width:21.5mm;text-align:center}}
-.back .tile svg{{width:16.5mm;height:16.5mm;display:block;margin:0 auto}}
-.back .tile b{{display:block;margin-top:1.4mm;color:#123B4A;font-weight:900;font-size:6.4pt;line-height:1.05;text-transform:uppercase}}
+.back{{background:#fff}}
+.back .panel{{position:absolute;left:6.5mm;top:6.5mm;right:6.5mm;bottom:6.5mm;background:#00ADBC;border-radius:3.2mm}}
+.back .safe{{left:10mm;top:10mm;right:10mm;bottom:10mm}}
+.back .grid{{position:absolute;inset:0;display:grid;grid-template-columns:31mm 1fr;gap:3mm;align-items:center}}
+.back h2{{font-weight:900;font-size:9.6pt;line-height:1.02;text-transform:uppercase;text-shadow:.35mm .35mm 0 #123B4A}}
+.back .pill{{display:inline-block;margin-top:2.6mm;background:#FF775E;color:#fff;font-weight:900;font-size:6.6pt;line-height:1.15;border-radius:2.4mm;padding:1.6mm 2.2mm;text-transform:uppercase}}
+.back .url{{margin-top:2.2mm;font-weight:700;font-size:6.8pt}}
+.back .qrs{{display:flex;gap:2.2mm;justify-content:flex-end}}
+.back .tile{{background:transparent;padding:0;width:19.4mm;text-align:center}}
+.back .tile svg{{width:17mm;height:17mm;display:block;margin:0 auto}}
+.back .tile b{{display:block;margin-top:1.6mm;color:#fff;font-weight:900;font-size:6.2pt;line-height:1.05;text-transform:uppercase}}
 </style></head><body>
 <div class="pg front"><div class="safe">
   <div class="lock">{PERKS}<span class="by">by <img src="data:image/png;base64,{LOGO}" alt="ULTIMATE"></span></div>
@@ -59,7 +61,7 @@ html,body{{font-family:'Work Sans',Arial,sans-serif;color:#fff;-webkit-print-col
   <div class="name"></div>
   <div class="contact">E: perks@ultimate.travel<br>W: perks.ultimate.travel</div>
 </div></div>
-<div class="pg back"><div class="safe"><div class="grid">
+<div class="pg back"><div class="panel"></div><div class="safe"><div class="grid">
   <div><h2>Get your venue in front of East Coast travellers</h2><span class="pill">List free with<br>code 'ULTIMATE'</span><div class="url">W: perks.ultimate.travel</div></div>
   <div class="qrs"><div class="tile">{SEE}<b>See perks</b></div><div class="tile">{LIST}<b>List your venue</b></div></div>
 </div></div></div>
