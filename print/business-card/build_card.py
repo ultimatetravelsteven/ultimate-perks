@@ -14,7 +14,7 @@ def qr_svg(url, color='#123B4A'):
 SEE = qr_svg('https://perks.ultimate.travel', '#FFFFFF')
 LIST = qr_svg('https://perks.ultimate.travel/venues/#join', '#FFFFFF')
 
-PERKS = '''<svg class="pk" viewBox="0 0 460 112" role="img" aria-label="PERKS"><g font-family="Work Sans" font-weight="900" font-size="130" text-anchor="middle">
+PERKS = '''<svg class="pk" viewBox="-2 -2 474 122" role="img" aria-label="PERKS"><g font-family="Work Sans" font-weight="900" font-size="130" text-anchor="middle">
 <text x="239" y="109" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text>
 <text x="230" y="100" fill="#123B4A" stroke="#123B4A" stroke-width="16" stroke-linejoin="round">PERKS</text>
 <text x="230" y="100" fill="#FFFFFF">PERKS</text></g></svg>'''
@@ -38,7 +38,7 @@ html,body{{font-family:'Work Sans',Arial,sans-serif;color:#fff;-webkit-print-col
 .front .tag{{margin-top:3.2mm;white-space:nowrap;font-weight:900;font-size:10.5pt;line-height:1.05;text-transform:uppercase;text-shadow:.35mm .35mm 0 #123B4A}}
 .front .sub{{margin-top:1.8mm;font-weight:700;font-size:7.6pt;line-height:1.3;white-space:nowrap}}
 .front .stops{{margin-top:1.4mm;font-weight:700;font-size:5.6pt;line-height:1.45;white-space:nowrap;color:#fff}}
-.front .name{{position:absolute;left:0;right:30mm;bottom:10.5mm;border-bottom:.35mm solid #fff;height:6mm}}
+.front .name{{margin-top:2.6mm;width:52mm;border-bottom:.35mm solid #fff}}
 .front .contact{{position:absolute;left:0;bottom:0;font-weight:700;font-size:8pt;line-height:1.45}}
 .front .dots{{position:absolute;right:-3mm;bottom:-3mm;width:30mm;height:30mm;border-radius:50%;background:#00ADBC}}
 .front .dots b{{position:absolute;left:8.5mm;top:9mm;font-weight:900;font-size:13pt;line-height:.95;text-transform:uppercase;text-align:left}}
