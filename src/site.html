@@ -340,7 +340,7 @@ function drawPrice(msg){const el=document.getElementById('pricebox');if(!el)retu
   const free=!!F.promo;
   el.innerHTML=`<div class="pl">Annual listing</div>
     <div class="amt">${free?'<span class="was">$299</span><span class="now">$0</span>':'<span class="now">$299</span>'}<span class="per">${free?`for ${F.promoMonths} months`:'for 12 months, incl. GST'}</span></div>
-    ${free?`<div class="ok">Code ${esc(F.promo)} applied. Your listing is free.</div>`:PROMO_ON()?'<div class="cta">Use promo code <b>ULTIMATE</b> to get a free listing</div>':''}
+    ${free?`<div class="ok">Code '${esc(F.promo)}' applied. Your listing is free.</div>`:PROMO_ON()?'<div class="cta">Use promo code <b>'ULTIMATE'</b> to get a free listing</div>':''}
     ${PROMO_ON()||free?`<div class="pc"><label class="sr" for="pcode" style="position:absolute;left:-9999px">Promo code</label><input class="i" id="pcode" placeholder="Promo code" value="${esc(F.promo||'')}" ${free?'disabled':''}><button class="btn" type="button" id="pcgo">${free?'Remove':'Apply'}</button></div><div class="pmsg" id="pmsg" role="alert"></div>`:''}
     <ul><li>Up to 3 offers, changed any time</li><li>Logo, photos and opening hours</li><li>Shown to travellers in your town</li></ul>`;
   const go=document.getElementById('pcgo');if(go)go.onclick=()=>{if(F.promo){F.promo='';draw();return}if(applyPromo(document.getElementById('pcode').value)){draw()}else{const m=document.getElementById('pmsg');m.textContent='That code is not valid. Check the spelling and try again.';m.style.display='block'}};
@@ -374,7 +374,7 @@ function draw(){
     <div id="blnk" style="display:${F.bmode==='link'?'block':'none'}"><label class="f">Booking page<input class="i" id="burl" value="${esc(F.burl||'')}" placeholder="https://yoursite.com.au/book"></label></div>`:''}
     <p class="small" style="margin:0">You can add more offers, days and times in your portal later.</p>${err}
     <div style="display:flex;gap:10px"><button class="btn ghost" type="button" id="back">Back</button><button class="btn" type="submit">Next: pay</button></div>`;
-  if(F.step===4)f.innerHTML=`<div class="card" style="padding:16px">${F.promo?`<b>Free listing, ${F.promoMonths} months</b> (code ${esc(F.promo)})<br>${esc(F.name)} · $0.00 today. After that it's $299 a year if you choose to renew.`:`<b>Annual listing, 12 months</b><br>${esc(F.name)} · $299.00 incl. GST ($27.18)`}</div>
+  if(F.step===4)f.innerHTML=`<div class="card" style="padding:16px">${F.promo?`<b>Free listing, ${F.promoMonths} months</b> (code '${esc(F.promo)}')<br>${esc(F.name)} · $0.00 today. After that it's $299 a year if you choose to renew.`:`<b>Annual listing, 12 months</b><br>${esc(F.name)} · $299.00 incl. GST ($27.18)`}</div>
     <div style="display:flex;gap:10px;align-items:flex-end"><label class="f" style="flex:1">Promo code<input class="i" id="promo" value="${esc(F.promo||'')}" style="text-transform:uppercase"></label><button class="btn ghost" type="button" id="applyp">${F.promo?'Remove':'Apply'}</button></div>
     ${F.promo?`<p style="margin:0">No card needed today. We'll email you before your free listing ends so you can choose to renew.</p>`:`<label class="f">Name on card<input class="i" id="cn" value="${esc(F.contact)}" autocomplete="cc-name"></label>
     <label class="f">Card number<input class="i" id="cc" inputmode="numeric" autocomplete="cc-number" placeholder="4444 3333 2222 1111"></label>

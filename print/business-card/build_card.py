@@ -60,7 +60,7 @@ html,body{{font-family:'Work Sans',Arial,sans-serif;color:#fff;-webkit-print-col
   <div class="contact">perks@ultimate.travel<br>perks.ultimate.travel</div>
 </div></div>
 <div class="pg back"><div class="safe"><div class="grid">
-  <div><h2>Get your venue in front of East Coast travellers</h2><span class="pill">List free with<br>code ULTIMATE</span><div class="url">perks.ultimate.travel</div></div>
+  <div><h2>Get your venue in front of East Coast travellers</h2><span class="pill">List free with<br>code 'ULTIMATE'</span><div class="url">perks.ultimate.travel</div></div>
   <div class="qrs"><div class="tile">{SEE}<b>See perks</b></div><div class="tile">{LIST}<b>List your venue</b></div></div>
 </div></div></div>
 </body></html>'''
