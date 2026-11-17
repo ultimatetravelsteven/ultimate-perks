@@ -184,7 +184,9 @@ footer a{color:#fff}
 #join .drop{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.7);color:#fff}
 #join .thumbs img{border-color:#fff}
 #join a{color:#fff}
-section[id]{scroll-margin-top:84px}
+section[id]{scroll-margin-top:calc(var(--hdrh,84px) + 8px)}
+/* // CSS NAME: site-mobile-header // */
+@media(max-width:760px){.hdr .nav a:not(.btn){display:none}.hdr .w{flex-wrap:nowrap}.hdr .nav{flex-wrap:nowrap}}
 /* // CSS NAME: site-join-error // */
 #join .err{background:#fff;border:2px solid #fff;color:#123B4A;font-weight:700}
 /* // CSS NAME: site-join-price // */
@@ -330,6 +332,7 @@ section[id]{scroll-margin-top:84px}
 </div></footer>
 
 <script>
+(()=>{const h=document.querySelector('.hdr');const set=()=>document.documentElement.style.setProperty('--hdrh',h.getBoundingClientRect().height+'px');set();addEventListener('resize',set);if(window.ResizeObserver)new ResizeObserver(set).observe(h)})();
 const D=__DATA__;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const luhn=n=>{n=n.replace(/\D/g,'');let s=0,a=false;for(let i=n.length-1;i>=0;i--){let d=+n[i];if(a){d*=2;if(d>9)d-=9}s+=d;a=!a}return n.length>=13&&s%10===0};
@@ -340,7 +343,7 @@ function drawPrice(msg){const el=document.getElementById('pricebox');if(!el)retu
   const free=!!F.promo;
   el.innerHTML=`<div class="pl">Annual listing</div>
     <div class="amt">${free?'<span class="was">$299</span><span class="now">$0</span>':'<span class="now">$299</span>'}<span class="per">${free?`for ${F.promoMonths} months`:'for 12 months, incl. GST'}</span></div>
-    ${free?`<div class="ok">Code '${esc(F.promo)}' applied. Your listing is free.</div>`:PROMO_ON()?'<div class="cta">Use promo code <b>'ULTIMATE'</b> to get a free listing</div>':''}
+    ${free?`<div class="ok">Code '${esc(F.promo)}' applied. Your listing is free.</div>`:PROMO_ON()?'<div class="cta">Use promo code <b>&#39;ULTIMATE&#39;</b> to get a free listing</div>':''}
     ${PROMO_ON()||free?`<div class="pc"><label class="sr" for="pcode" style="position:absolute;left:-9999px">Promo code</label><input class="i" id="pcode" placeholder="Promo code" value="${esc(F.promo||'')}" ${free?'disabled':''}><button class="btn" type="button" id="pcgo">${free?'Remove':'Apply'}</button></div><div class="pmsg" id="pmsg" role="alert"></div>`:''}
     <ul><li>Up to 3 offers, changed any time</li><li>Logo, photos and opening hours</li><li>Shown to travellers in your town</li></ul>`;
   const go=document.getElementById('pcgo');if(go)go.onclick=()=>{if(F.promo){F.promo='';draw();return}if(applyPromo(document.getElementById('pcode').value)){draw()}else{const m=document.getElementById('pmsg');m.textContent='That code is not valid. Check the spelling and try again.';m.style.display='block'}};
