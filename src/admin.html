@@ -313,7 +313,7 @@ async function liveLoad(){const c=PerksAuth.client;const [v,b]=await Promise.all
   if(v.error){toast('Could not load venues: '+v.error.message);return}
   if(!v.data.length){S.needSeed=S.role==='admin';LIVE.on=false;render();return}
   DB.venues=v.data.map(r=>Object.assign({},r.data,{id:r.id,status:r.status}));DB.brands=(b.data||[]).map(r=>Object.assign({},r.data,{id:r.id}));
-  store.set(DB);liveSnap();LIVE.on=true;S.needSeed=false;render()}
+  store.set(DB);liveSnap();LIVE.on=true;S.needSeed=false;if(S.page==='dash'&&!S.viewAs)restorePage();render()}
 async function liveSeed(){const fresh=seedData(),Y=365*864e5,now=Date.now();const real=new Map(D.perks.map(p=>[String(p.id),p]));
   const venues=fresh.venues.map(v=>{if(v.status==='prospect')return v;const p=real.get(String(v.id))||{};const hours={};(p.hours||[]).forEach(([ds,o,c])=>ds.forEach(d=>hours[d]=[o,c]));
     return Object.assign(v,{status:'live',logo:p.logo||'',photos:(p.photos&&p.photos.length?p.photos:[p.photo]).filter(Boolean),desc:'',phone:'',web:'',insta:'',hours,hoursReal:!p.sampleHours,
@@ -702,6 +702,11 @@ function reports(){const t=S.tab||'exp';const st=DB.settings;
 }
 
 /* ---------- shell ---------- */
+// // Keep the current page in the address so a refresh stays put (#venues, #as-12/offers)
+function pageFromHash(){const h=decodeURIComponent(location.hash.slice(1));if(!h)return null;const m=h.match(/^as-([^/]+)\/(.+)$/);return m?{as:m[1],page:m[2]}:{as:null,page:h}}
+function restorePage(){const h=pageFromHash();if(!h)return;const okA=ANAV().some(n=>n[0]===h.page),okV=VNAV.some(n=>n[0]===h.page);
+  if(S.role==='admin'&&h.as&&DB.venues.some(v=>v.id===h.as)&&okV){S.viewAs=h.as;S.page=h.page}else if(S.role==='admin'&&!h.as&&okA){S.page=h.page}else if(S.role==='venue'&&okV){S.page=h.page}}
+function syncHash(){if(!S.role)return;const want='#'+(S.viewAs?'as-'+encodeURIComponent(S.viewAs)+'/':'')+S.page;if(location.hash!==want)history.replaceState(null,'',location.pathname+location.search+want)}
 function render(){
   const r=$('#root');
   if(!S.role){r.innerHTML=`<div class="login"><div class="box"><div class="login-logo">${LOCKUP()}</div><h1>Traveller Perks</h1><div class="muted">Venue and admin sign-in · perks.ultimate.travel</div>
@@ -719,15 +724,16 @@ function render(){
   <div class="main">${admin&&S.viewAs?`<div class="asbar"><span>Viewing as ${esc(v.name)}. You have full control: changes save to their account.</span><button class="btn sm ghost" data-act="exitas">Back to admin</button></div>`:''}
   <div class="top"><h1>${esc(title)}</h1><div class="who">${asVenue&&v?`${chip(v.status)} <span>${esc(v.name)} · ${esc(TOWN(v.town))}</span>${v.logo?`<img class="vlogo" src="${esc(v.logo)}" alt="${esc(v.name)} logo" onerror="this.remove()">`:''}`:`<span>Signed in as Steve (Owner)</span>`}</div></div>
   <div class="wrap">${asVenue?vPage():aPage()}</div></div></div>`;
+  syncHash();
 }
 
 /* ---------- actions ---------- */
 const act={
   close:closeModal,
-  login:d=>{S.role=d.r;S.page='dash';S.viewAs=null;render()},
+  login:d=>{S.role=d.r;S.page='dash';S.viewAs=null;restorePage();render()},
   glogin:d=>{PerksAuth.signIn(d.p).catch(e=>toast(e.message))},
   elogin:()=>{const em=($('.login input[type=email]')||{}).value||'';if(!/.+@.+\..+/.test(em))return toast('Type your email first');PerksAuth.signInEmail(em).then(()=>toast('Check your inbox for the sign-in link')).catch(e=>toast(e.message))},
-  logout:()=>{if(window.PerksAuth&&PerksAuth.live)PerksAuth.signOut();S.role=null;render()},
+  logout:()=>{if(window.PerksAuth&&PerksAuth.live)PerksAuth.signOut();S.role=null;S.viewAs=null;history.replaceState(null,'',location.pathname);render()},
   _oldlogout:()=>{S.role=null;render()},
   go:d=>{S.page=d.p;S.tab=d.t||null;S.q='';S.ftown='';S.fstatus='';render();scrollTo(0,0)},
   tab:d=>{S.tab=d.t;render()},
@@ -870,7 +876,7 @@ render();
 window.addEventListener('perksauth:ready',()=>{ if(!window.PerksAuth||!PerksAuth.live) return; render();
   PerksAuth.onChange((u,prof)=>{ if(!u){ if(S.role){S.role=null;render()} return; }
     if(!prof||!prof.role||prof.role==='traveller'){ toast('This account is not set up as a venue or admin yet'); return; }
-    S.role=prof.role==='admin'?'admin':'venue'; if(prof.venue_ref||prof.venue_id) S.venueId=prof.venue_ref||prof.venue_id; S.page='dash'; render(); if(!LIVE.on) liveLoad(); });
+    const first=!S.role; S.role=prof.role==='admin'?'admin':'venue'; if(prof.venue_ref||prof.venue_id) S.venueId=prof.venue_ref||prof.venue_id; if(first){S.page='dash';restorePage();} render(); if(!LIVE.on) liveLoad(); });
 });
 </script>
 </body>
