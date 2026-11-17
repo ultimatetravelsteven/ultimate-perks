@@ -31,6 +31,16 @@ const PerksAuth = {
     });
     if (error) throw error;
   },
+  // Team welcome email: sends a branded sign-in link to someone just given access.
+  // New accounts get the "Welcome to the team" version (perks_admin / perks_venue flags).
+  async sendTeamEmail(email, role, venueName) {
+    if (!live) throw new Error('Emails work on the live site');
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+    const c = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'perks-invite' } });
+    const data = role === 'admin' ? { perks_admin: true } : { perks_venue: venueName || 'your venue' };
+    const { error } = await c.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + '/admin/', shouldCreateUser: true, data } });
+    if (error) throw error;
+  },
   async signOut() {
     if (live) await this.client.auth.signOut();
     this.user = null; this.profile = null; this._emit();
@@ -51,6 +61,9 @@ if (live) {
   });
   const { data } = await PerksAuth.client.auth.getSession();
   PerksAuth.user = data.session ? data.session.user : null;
+  // Clear the one-time welcome flags so later sign-in emails use the normal copy
+  const md = PerksAuth.user && PerksAuth.user.user_metadata || {};
+  if (md.perks_admin || md.perks_venue) PerksAuth.client.auth.updateUser({ data: { perks_admin: null, perks_venue: null } }).catch(() => {});
   await PerksAuth.loadProfile();
   PerksAuth._emit();
   PerksAuth.client.auth.onAuthStateChange(async (_evt, session) => {
