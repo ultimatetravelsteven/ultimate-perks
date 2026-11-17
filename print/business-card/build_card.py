@@ -36,7 +36,8 @@ html,body{{font-family:'Work Sans',Arial,sans-serif;color:#fff;-webkit-print-col
 .front .by{{display:flex;align-items:center;gap:1.2mm;font-weight:700;font-size:7pt;padding-bottom:1.6mm;white-space:nowrap}}
 .front .by img{{height:2.6mm;width:auto;display:block}}
 .front .tag{{margin-top:3.2mm;white-space:nowrap;font-weight:900;font-size:10.5pt;line-height:1.05;text-transform:uppercase;text-shadow:.35mm .35mm 0 #123B4A}}
-.front .sub{{margin-top:2mm;font-weight:700;font-size:7.4pt;line-height:1.3}}
+.front .sub{{margin-top:1.8mm;font-weight:700;font-size:7.6pt;line-height:1.3;white-space:nowrap}}
+.front .stops{{margin-top:1.4mm;font-weight:700;font-size:5.6pt;line-height:1.45;white-space:nowrap;color:#fff}}
 .front .name{{position:absolute;left:0;right:30mm;bottom:10.5mm;border-bottom:.35mm solid #fff;height:6mm}}
 .front .contact{{position:absolute;left:0;bottom:0;font-weight:700;font-size:8pt;line-height:1.45}}
 .front .dots{{position:absolute;right:-3mm;bottom:-3mm;width:30mm;height:30mm;border-radius:50%;background:#00ADBC}}
@@ -57,7 +58,8 @@ html,body{{font-family:'Work Sans',Arial,sans-serif;color:#fff;-webkit-print-col
 <div class="pg front"><div class="safe">
   <div class="lock">{PERKS}<span class="by">by <img src="data:image/png;base64,{LOGO}" alt="ULTIMATE"></span></div>
   <div class="tag">The East Coast traveller club</div>
-  <div class="sub">Deals for backpackers and working<br>holiday makers, Melbourne to Cairns</div>
+  <div class="sub">Deals for Backpackers and Working Holiday Makers</div>
+  <div class="stops">Melbourne &middot; Sydney &middot; Byron Bay &middot; Surfers Paradise &middot; Brisbane &middot; Noosa<br>Rainbow Beach &middot; K'gari &middot; Whitsundays &middot; Magnetic Island &middot; Mission Beach &middot; Cairns</div>
   <div class="name"></div>
   <div class="contact">E: perks@ultimate.travel<br>W: perks.ultimate.travel</div>
 </div></div>
