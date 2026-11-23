@@ -43,11 +43,9 @@ html,body{{font-family:'Work Sans',Arial,sans-serif;color:#fff;-webkit-print-col
 .front .dots{{position:absolute;right:-3mm;bottom:-3mm;width:30mm;height:30mm;border-radius:50%;background:#00ADBC}}
 .front .dots b{{position:absolute;left:8.5mm;top:9mm;font-weight:900;font-size:13pt;line-height:.95;text-transform:uppercase;text-align:left}}
 /* // CSS NAME: card-back // */
-.back{{background:#fff}}
-.back .panel{{position:absolute;left:6.5mm;top:6.5mm;right:6.5mm;bottom:6.5mm;background:#00ADBC;border-radius:3.2mm}}
-.back .safe{{left:10mm;top:10mm;right:10mm;bottom:10mm}}
-.back .grid{{position:absolute;inset:0;display:grid;grid-template-columns:31mm 1fr;gap:3mm;align-items:center}}
-.back h2{{font-weight:900;font-size:9.6pt;line-height:1.02;text-transform:uppercase;text-shadow:.35mm .35mm 0 #123B4A}}
+.back{{background:#00ADBC}}
+.back .grid{{position:absolute;inset:0;display:grid;grid-template-columns:38mm 1fr;gap:3mm;align-items:center}}
+.back h2{{font-weight:900;font-size:10pt;line-height:1.02;text-transform:uppercase;text-shadow:.35mm .35mm 0 #123B4A}}
 .back .pill{{display:inline-block;margin-top:2.6mm;background:#FF775E;color:#fff;font-weight:900;font-size:6.6pt;line-height:1.15;border-radius:2.4mm;padding:1.6mm 2.2mm;text-transform:uppercase}}
 .back .url{{margin-top:2.2mm;font-weight:700;font-size:6.8pt}}
 .back .qrs{{display:flex;gap:2.2mm;justify-content:flex-end}}
@@ -63,7 +61,7 @@ html,body{{font-family:'Work Sans',Arial,sans-serif;color:#fff;-webkit-print-col
   <div class="name"></div>
   <div class="contact">E: perks@ultimate.travel<br>W: perks.ultimate.travel</div>
 </div></div>
-<div class="pg back"><div class="panel"></div><div class="safe"><div class="grid">
+<div class="pg back"><div class="safe"><div class="grid">
   <div><h2>Get your venue in front of East Coast travellers</h2><span class="pill">List free with<br>code 'ULTIMATE'</span><div class="url">W: perks.ultimate.travel</div></div>
   <div class="qrs"><div class="tile">{SEE}<b>See perks</b></div><div class="tile">{LIST}<b>List your venue</b></div></div>
 </div></div></div>
