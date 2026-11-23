@@ -1,4 +1,4 @@
-# ULTIMATE Perks business card: 90 x 55 mm, 3 mm bleed (96 x 61 mm pages), front + back.
+# ULTIMATE Perks business card: 90 x 55 mm trim, 5 mm bleed (100 x 65 mm pages, Officeworks spec), front + back.
 import base64, os, qrcode
 R = os.path.dirname(os.path.abspath(__file__)); A = os.path.join(R, '..', '..', 'assets')
 b64 = lambda p: base64.b64encode(open(p, 'rb').read()).decode()
@@ -24,11 +24,11 @@ html = f'''<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 @font-face{{font-family:'Work Sans';font-weight:700;src:url(data:font/woff2;base64,{F['700']}) format('woff2')}}
 @font-face{{font-family:'Work Sans';font-weight:900;src:url(data:font/woff2;base64,{F['900']}) format('woff2')}}
 /* // CSS NAME: card-page // */
-@page{{size:96mm 61mm;margin:0}}
+@page{{size:100.4mm 65.4mm;margin:0}}
 *{{box-sizing:border-box;margin:0;padding:0}}
 html,body{{font-family:'Work Sans',Arial,sans-serif;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-.pg{{width:96mm;height:61mm;position:relative;overflow:hidden;page-break-after:always}}
-.safe{{position:absolute;left:7mm;top:7mm;right:7mm;bottom:7mm}}
+.pg{{width:100.4mm;height:65.4mm;position:relative;overflow:hidden;page-break-after:always}}
+.safe{{position:absolute;left:10.2mm;top:10.2mm;right:10.2mm;bottom:10.2mm}}
 /* // CSS NAME: card-front // */
 .front{{background:#4ECAC2}}
 .front .lock{{display:flex;align-items:flex-end;gap:2.2mm}}
